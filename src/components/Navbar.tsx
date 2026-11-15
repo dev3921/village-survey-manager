@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { dbService } from '../lib/db';
 import type { Profile, Team } from '../lib/types';
 import { 
   Building2, 
@@ -11,8 +10,7 @@ import {
   Check, 
   ShieldCheck, 
   UserCheck, 
-  KeyRound,
-  Sparkles
+  KeyRound 
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -30,11 +28,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
   onLogout,
-  onRefresh,
 }) => {
   const [copied, setCopied] = useState(false);
-  const [switchingRole, setSwitchingRole] = useState(false);
-
   const isAdmin = profile?.role === 'admin';
 
   const handleCopyCode = () => {
@@ -42,16 +37,6 @@ export const Navbar: React.FC<NavbarProps> = ({
       navigator.clipboard.writeText(team.referral_code);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  const handleDemoSwitch = async (type: 'admin' | 'worker') => {
-    setSwitchingRole(true);
-    try {
-      await dbService.auth.loginAsDemo(type);
-      onRefresh();
-    } finally {
-      setSwitchingRole(false);
     }
   };
 
@@ -81,7 +66,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <nav className="hidden md:flex items-center gap-1">
             <button
               onClick={() => setActiveTab('surveys')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
                 activeTab === 'surveys'
                   ? 'bg-emerald-50 text-emerald-800 font-semibold'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -89,26 +74,28 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <FileSpreadsheet className="w-4 h-4" />
               <span>सर्व्हेक्षण यादी</span>
-              <span className="text-xs text-slate-600">(Surveys)</span>
+              <span className="text-xs text-slate-500">(Surveys)</span>
             </button>
 
             <button
               onClick={() => setActiveTab('new-survey')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
                 activeTab === 'new-survey'
-                  ? 'bg-emerald-600 text-white shadow-sm'
+                  ? 'bg-emerald-600 text-white shadow-xs font-semibold'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
               <PlusCircle className="w-4 h-4" />
               <span>नवीन नोंदणी</span>
-              <span className={`text-xs ${activeTab === 'new-survey' ? 'text-emerald-100' : 'text-slate-600'}`}>(New)</span>
+              <span className={`text-xs ${activeTab === 'new-survey' ? 'text-emerald-100' : 'text-slate-500'}`}>
+                (New)
+              </span>
             </button>
 
             {isAdmin && (
               <button
                 onClick={() => setActiveTab('team')}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
                   activeTab === 'team'
                     ? 'bg-emerald-50 text-emerald-800 font-semibold'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -116,13 +103,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <Users className="w-4 h-4" />
                 <span>संघ व वापरकर्ते</span>
-                <span className="text-xs text-slate-600">(Team)</span>
+                <span className="text-xs text-slate-500">(Team)</span>
               </button>
             )}
           </nav>
 
           {/* User Profile & Actions */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             {/* Referral Code Badge for Admin */}
             {isAdmin && team && (
               <div 
@@ -139,7 +126,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             )}
 
-            {/* Role Badge */}
+            {/* Profile Info */}
             <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
               <div className="text-right hidden sm:block">
                 <div className="text-xs font-semibold text-slate-800 truncate max-w-[140px]">
@@ -158,39 +145,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
               </div>
 
-              {/* Quick Role Switcher Pill (Local/Demo helper) */}
-              <div className="hidden xl:flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-[11px]">
-                <button
-                  disabled={switchingRole}
-                  onClick={() => handleDemoSwitch('admin')}
-                  className={`px-2 py-1 rounded-md transition-all ${
-                    isAdmin
-                      ? 'bg-white shadow-2xs text-amber-800 font-bold'
-                      : 'text-slate-500 hover:text-slate-800'
-                  }`}
-                  title="Switch to Admin View (Pramod Patil)"
-                >
-                  Admin
-                </button>
-                <button
-                  disabled={switchingRole}
-                  onClick={() => handleDemoSwitch('worker')}
-                  className={`px-2 py-1 rounded-md transition-all ${
-                    !isAdmin
-                      ? 'bg-white shadow-2xs text-blue-700 font-bold'
-                      : 'text-slate-500 hover:text-slate-800'
-                  }`}
-                  title="Switch to Field Worker View (Sunita Shinde)"
-                >
-                  Worker
-                </button>
-              </div>
-
               {/* Logout Button */}
               <button
                 onClick={onLogout}
                 title="बाहेर पडा (Logout)"
-                className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -202,7 +161,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex md:hidden items-center justify-around py-2 border-t border-slate-100 text-xs">
           <button
             onClick={() => setActiveTab('surveys')}
-            className={`flex flex-col items-center gap-1 px-3 py-1 rounded-md ${
+            className={`flex flex-col items-center gap-1 px-3 py-1 rounded-md cursor-pointer ${
               activeTab === 'surveys' ? 'text-emerald-700 font-bold' : 'text-slate-600'
             }`}
           >
@@ -211,7 +170,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('new-survey')}
-            className={`flex flex-col items-center gap-1 px-3 py-1 rounded-md ${
+            className={`flex flex-col items-center gap-1 px-3 py-1 rounded-md cursor-pointer ${
               activeTab === 'new-survey' ? 'text-emerald-700 font-bold' : 'text-slate-600'
             }`}
           >
@@ -221,7 +180,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {isAdmin && (
             <button
               onClick={() => setActiveTab('team')}
-              className={`flex flex-col items-center gap-1 px-3 py-1 rounded-md ${
+              className={`flex flex-col items-center gap-1 px-3 py-1 rounded-md cursor-pointer ${
                 activeTab === 'team' ? 'text-emerald-700 font-bold' : 'text-slate-600'
               }`}
             >

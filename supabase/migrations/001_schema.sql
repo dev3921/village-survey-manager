@@ -143,6 +143,47 @@ CREATE TRIGGER on_auth_user_created
     EXECUTE FUNCTION public.handle_new_user();
 
 -- ============================================================================
+-- 4.1 ADMIN TEAM AUTO-CREATION TRIGGER
+-- When a user is promoted to admin, automatically create a team with referral code
+-- ============================================================================
+
+CREATE OR REPLACE FUNCTION public.handle_admin_promotion()
+RETURNS TRIGGER AS $$
+DECLARE
+    new_team_id UUID;
+    random_code TEXT;
+BEGIN
+    IF NEW.role = 'admin' AND (TG_OP = 'INSERT' OR OLD.role <> 'admin' OR NEW.team_id IS NULL) THEN
+        -- Check if they already own a team
+        SELECT id INTO new_team_id FROM public.teams WHERE admin_id = NEW.id LIMIT 1;
+        
+        IF new_team_id IS NULL THEN
+            -- Generate unique 6-character uppercase alphanumeric code
+            random_code := UPPER(SUBSTRING(MD5(RANDOM()::TEXT || CLOCK_TIMESTAMP()::TEXT) FROM 1 FOR 6));
+            
+            INSERT INTO public.teams (name, admin_id, referral_code)
+            VALUES (
+                COALESCE(NEW.full_name, 'Admin') || ' चा संघ (Team)',
+                NEW.id,
+                random_code
+            )
+            RETURNING id INTO new_team_id;
+        END IF;
+
+        NEW.team_id := new_team_id;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+DROP TRIGGER IF EXISTS on_profile_admin_promoted ON public.profiles;
+CREATE TRIGGER on_profile_admin_promoted
+    BEFORE INSERT OR UPDATE OF role ON public.profiles
+    FOR EACH ROW
+    EXECUTE FUNCTION public.handle_admin_promotion();
+
+-- ============================================================================
 -- 5. PERFORMANCE INDEXES
 -- ============================================================================
 
