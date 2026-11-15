@@ -1,11 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import type { Family, Profile } from '../lib/types';
 import { exportFamiliesToExcel, exportFamiliesToPDF } from '../lib/export';
+import { useLanguage, translations } from '../lib/i18n';
 import { 
   Search, 
-  Filter, 
   Download, 
-  FileText, 
   Plus, 
   Eye, 
   Edit3, 
@@ -14,11 +13,8 @@ import {
   Building2, 
   TrendingUp, 
   Zap, 
-  CheckCircle2, 
-  XCircle,
   X,
-  FileSpreadsheet,
-  AlertCircle
+  FileSpreadsheet
 } from 'lucide-react';
 
 interface SurveyListProps {
@@ -31,18 +27,18 @@ interface SurveyListProps {
 
 export const SurveyList: React.FC<SurveyListProps> = ({
   families,
-  profile,
   onNewSurvey,
   onEditSurvey,
   onDeleteSurvey,
 }) => {
+  const [lang] = useLanguage();
+  const t = translations[lang];
+
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [houseFilter, setHouseFilter] = useState<string>('all');
   const [selectedFamily, setSelectedFamily] = useState<Family | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  const isAdmin = profile?.role === 'admin';
 
   // Metrics computation
   const metrics = useMemo(() => {
@@ -82,7 +78,7 @@ export const SurveyList: React.FC<SurveyListProps> = ({
   }, [families, searchTerm, statusFilter, houseFilter]);
 
   const handleDelete = async (id: string, name: string) => {
-    if (window.confirm(`तुम्हाला खात्री आहे का? "${name}" यांचे कुटुंब सर्वेक्षण हटवायचे आहे?`)) {
+    if (window.confirm(`${t.confirmDelete}\n(${name})`)) {
       setDeletingId(id);
       try {
         await onDeleteSurvey(id);
@@ -100,10 +96,10 @@ export const SurveyList: React.FC<SurveyListProps> = ({
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              एकूण कुटुंबे (Families)
+              {t.statFamilies}
             </p>
             <p className="text-2xl font-bold text-slate-900 mt-1">{metrics.totalFamilies}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">नोंदणी झालेली कुटुंबे</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">{t.statFamiliesDesc}</p>
           </div>
           <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
             <Building2 className="w-6 h-6" />
@@ -114,10 +110,10 @@ export const SurveyList: React.FC<SurveyListProps> = ({
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              एकूण लोकसंख्या (Members)
+              {t.statMembers}
             </p>
             <p className="text-2xl font-bold text-slate-900 mt-1">{metrics.totalMembers}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">कुटुंब सदस्य</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">{t.statMembersDesc}</p>
           </div>
           <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
             <Users className="w-6 h-6" />
@@ -128,13 +124,13 @@ export const SurveyList: React.FC<SurveyListProps> = ({
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              BPL / APL स्तर
+              {t.statEconomic}
             </p>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-2xl font-bold text-amber-600">{metrics.bplCount} BPL</span>
               <span className="text-xs text-slate-400 font-medium">/ {metrics.aplCount} APL</span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-0.5">आर्थिक वर्गवारी</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">{t.statEconomicDesc}</p>
           </div>
           <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
             <TrendingUp className="w-6 h-6" />
@@ -145,13 +141,13 @@ export const SurveyList: React.FC<SurveyListProps> = ({
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              पायाभूत सुविधा
+              {t.statAmenities}
             </p>
             <div className="flex items-center gap-3 mt-1 text-sm font-bold text-slate-800">
-              <span>⚡ वीज: {metrics.electricityCount}</span>
-              <span>🚽 शौचालय: {metrics.toiletCount}</span>
+              <span>⚡ {metrics.electricityCount}</span>
+              <span>🚽 {metrics.toiletCount}</span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-0.5">उपलब्ध सुविधा संख्या</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">{t.statAmenitiesDesc}</p>
           </div>
           <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
             <Zap className="w-6 h-6" />
@@ -168,43 +164,40 @@ export const SurveyList: React.FC<SurveyListProps> = ({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="नाव, गाव, जात किंवा बचत गटाचे नाव शोधा... (Search surveys)"
+            placeholder={t.searchPlaceholder}
             className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
           />
         </div>
 
         {/* Filters & Export Actions */}
         <div className="flex flex-wrap items-center gap-2.5">
-          {/* Status filter */}
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             className="px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white text-slate-700 font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
           >
-            <option value="all">सर्व स्तर (All APL/BPL)</option>
-            <option value="BPL">फक्त BPL</option>
-            <option value="APL">फक्त APL</option>
+            <option value="all">{t.filterAllStatus}</option>
+            <option value="BPL">{t.filterBPL}</option>
+            <option value="APL">{t.filterAPL}</option>
           </select>
 
-          {/* House filter */}
           <select
             value={houseFilter}
             onChange={(e) => setHouseFilter(e.target.value)}
             className="px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white text-slate-700 font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
           >
-            <option value="all">सर्व घरे (All Houses)</option>
-            <option value="पक्का">पक्के घर (Pucca)</option>
-            <option value="कच्चा">कच्चे घर (Kutcha)</option>
+            <option value="all">{t.filterAllHouse}</option>
+            <option value="पक्का">{t.filterPucca}</option>
+            <option value="कच्चा">{t.filterKutcha}</option>
           </select>
 
-          {/* Export Excel (Matches uploaded template) */}
+          {/* Export Excel */}
           <button
             onClick={() => exportFamiliesToExcel(filteredFamilies)}
-            title="Export exact 25-column format to Excel"
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors"
           >
             <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Excel डाऊनलोड</span>
+            <span>{t.btnExcel}</span>
           </button>
 
           {/* Export PDF */}
@@ -213,7 +206,7 @@ export const SurveyList: React.FC<SurveyListProps> = ({
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 transition-colors"
           >
             <Download className="w-3.5 h-3.5 text-slate-600" />
-            <span>PDF अहवाल</span>
+            <span>{t.btnPdf}</span>
           </button>
 
           {/* New Survey Button */}
@@ -222,7 +215,7 @@ export const SurveyList: React.FC<SurveyListProps> = ({
             className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-xs transition-colors"
           >
             <Plus className="w-4 h-4" />
-            <span>नवीन नोंदणी</span>
+            <span>{t.btnNew}</span>
           </button>
         </div>
       </div>
@@ -234,18 +227,16 @@ export const SurveyList: React.FC<SurveyListProps> = ({
             <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4">
               <FileSpreadsheet className="w-8 h-8" />
             </div>
-            <h3 className="text-base font-bold text-slate-900">एकही कुटुंब सर्व्हेक्षण सापडले नाही</h3>
+            <h3 className="text-base font-bold text-slate-900">{t.emptyTitle}</h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-6">
-              {searchTerm || statusFilter !== 'all'
-                ? 'शोध निकषांशी जुळणारे निकाल उपलब्ध नाहीत. कृपया शोध बदलून पहा.'
-                : 'आपल्या संघात अद्याप कुटुंब नोंदणी झालेली नाही. पहिली नोंदणी सुरू करा.'}
+              {t.emptyDesc}
             </p>
             <button
               onClick={onNewSurvey}
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors"
             >
               <Plus className="w-4 h-4" />
-              <span>पहिली नोंदणी करा (Add Survey)</span>
+              <span>{t.emptyBtn}</span>
             </button>
           </div>
         ) : (
@@ -253,14 +244,14 @@ export const SurveyList: React.FC<SurveyListProps> = ({
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 uppercase font-bold tracking-wider text-[11px]">
-                  <th className="py-3.5 px-4 w-12 text-center">अ.क्र</th>
-                  <th className="py-3.5 px-4">कुटुंब प्रमुख (Head) व गाव</th>
-                  <th className="py-3.5 px-4 text-center">सदस्य (Members)</th>
-                  <th className="py-3.5 px-4">आर्थिक स्तर / जात</th>
-                  <th className="py-3.5 px-4">उत्पन्न व स्त्रोत</th>
-                  <th className="py-3.5 px-4">घर व सुविधा</th>
-                  <th className="py-3.5 px-4">तारीख</th>
-                  <th className="py-3.5 px-4 text-right">क्रिया (Actions)</th>
+                  <th className="py-3.5 px-4 w-12 text-center">{t.thSr}</th>
+                  <th className="py-3.5 px-4">{t.thHead}</th>
+                  <th className="py-3.5 px-4 text-center">{t.thMembers}</th>
+                  <th className="py-3.5 px-4">{t.thStatus}</th>
+                  <th className="py-3.5 px-4">{t.thIncome}</th>
+                  <th className="py-3.5 px-4">{t.thHouse}</th>
+                  <th className="py-3.5 px-4">{t.thDate}</th>
+                  <th className="py-3.5 px-4 text-right">{t.thActions}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -275,7 +266,7 @@ export const SurveyList: React.FC<SurveyListProps> = ({
                     <td className="py-3.5 px-4">
                       <div className="font-bold text-slate-900 text-sm">{fam.head_name}</div>
                       <div className="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1.5">
-                        <span className="font-medium text-emerald-700">📍 {fam.village_name || 'गाव अनिर्दिष्ट'}</span>
+                        <span className="font-medium text-emerald-700">📍 {fam.village_name || '-'}</span>
                         {fam.shg_name && (
                           <span className="text-slate-400">· {fam.shg_name}</span>
                         )}
@@ -309,7 +300,7 @@ export const SurveyList: React.FC<SurveyListProps> = ({
                     {/* Income */}
                     <td className="py-3.5 px-4">
                       <div className="font-semibold text-emerald-700">
-                        {fam.monthly_income ? `₹${fam.monthly_income.toLocaleString('en-IN')}/महिना` : '-'}
+                        {fam.monthly_income ? `₹${fam.monthly_income.toLocaleString('en-IN')}` : '-'}
                       </div>
                       <div className="text-[11px] text-slate-500 truncate max-w-[130px]">
                         {fam.income_source || '-'}
@@ -319,21 +310,21 @@ export const SurveyList: React.FC<SurveyListProps> = ({
                     {/* House & Amenities */}
                     <td className="py-3.5 px-4">
                       <div className="text-slate-800 font-medium">
-                        {fam.house_type ? `${fam.house_type} घर` : '-'}
+                        {fam.house_type ? `${fam.house_type}` : '-'}
                       </div>
                       <div className="flex items-center gap-2 mt-0.5 text-[10px]">
                         <span className={fam.electricity ? 'text-emerald-700' : 'text-slate-400'}>
-                          ⚡ {fam.electricity ? 'वीज' : 'नाही'}
+                          ⚡ {fam.electricity ? (lang === 'mr' ? 'वीज' : 'Power') : '-'}
                         </span>
                         <span className={fam.toilet ? 'text-teal-700' : 'text-slate-400'}>
-                          🚽 {fam.toilet ? 'शौचालय' : 'नाही'}
+                          🚽 {fam.toilet ? (lang === 'mr' ? 'शौचालय' : 'Toilet') : '-'}
                         </span>
                       </div>
                     </td>
 
                     {/* Date */}
                     <td className="py-3.5 px-4 text-slate-400 text-[11px]">
-                      {new Date(fam.created_at).toLocaleDateString('mr-IN', {
+                      {new Date(fam.created_at).toLocaleDateString(lang === 'mr' ? 'mr-IN' : 'en-US', {
                         day: 'numeric',
                         month: 'short',
                       })}
@@ -344,16 +335,16 @@ export const SurveyList: React.FC<SurveyListProps> = ({
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => setSelectedFamily(fam)}
-                          className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="सविस्तर पहा (View Details)"
+                          className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                          title="Details"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
 
                         <button
                           onClick={() => onEditSurvey(fam)}
-                          className="p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                          title="माहिती संपादन करा (Edit Survey)"
+                          className="p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                          title="Edit"
                         >
                           <Edit3 className="w-4 h-4" />
                         </button>
@@ -361,8 +352,8 @@ export const SurveyList: React.FC<SurveyListProps> = ({
                         <button
                           disabled={deletingId === fam.id}
                           onClick={() => handleDelete(fam.id, fam.head_name)}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors disabled:opacity-50"
-                          title="हटवा (Delete)"
+                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+                          title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -376,18 +367,18 @@ export const SurveyList: React.FC<SurveyListProps> = ({
         )}
       </div>
 
-      {/* DETAIL MODAL (Displays all 25 fields for the chosen family) */}
+      {/* DETAIL MODAL */}
       {selectedFamily && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200">
             {/* Modal Header */}
             <div className="sticky top-0 bg-white p-5 border-b border-slate-200 flex items-center justify-between z-10">
               <div>
-                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                  अ.क्र #{selectedFamily.serial_no || 1}
+                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                  {t.thSr} #{selectedFamily.serial_no || 1}
                 </span>
                 <h3 className="text-xl font-bold text-slate-900 mt-1">{selectedFamily.head_name}</h3>
-                <p className="text-xs text-slate-500">गाव: {selectedFamily.village_name || 'अनिर्दिष्ट'}</p>
+                <p className="text-xs text-slate-500">{t.fVillage}: {selectedFamily.village_name || '-'}</p>
               </div>
 
               <div className="flex items-center gap-2">
@@ -397,57 +388,57 @@ export const SurveyList: React.FC<SurveyListProps> = ({
                     setSelectedFamily(null);
                     onEditSurvey(fam);
                   }}
-                  className="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                  className="px-3.5 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <Edit3 className="w-3.5 h-3.5" />
-                  <span>संपादन</span>
+                  <span>{t.btnEdit}</span>
                 </button>
                 <button
                   onClick={() => setSelectedFamily(null)}
-                  className="p-2 text-slate-400 hover:text-slate-700 rounded-lg transition-colors"
+                  className="p-2 text-slate-400 hover:text-slate-700 rounded-lg transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
-            {/* Modal Body with All 25 Columns */}
+            {/* Modal Body */}
             <div className="p-6 space-y-6 text-xs">
               {/* Member Roster */}
               <div>
                 <h4 className="font-bold text-slate-900 text-sm mb-3 flex items-center gap-2">
                   <Users className="w-4 h-4 text-blue-600" />
-                  <span>कुटुंब सदस्य यादी ({selectedFamily.members?.length || 1} सदस्य)</span>
+                  <span>{t.sec2Title} ({selectedFamily.members?.length || 1})</span>
                 </h4>
                 <div className="border border-slate-200 rounded-xl overflow-hidden">
                   <table className="w-full text-left">
                     <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
                       <tr>
-                        <th className="py-2 px-3">सदस्याचे नाव</th>
-                        <th className="py-2 px-3">वय</th>
-                        <th className="py-2 px-3">नाते</th>
-                        <th className="py-2 px-3">वैवाहिक स्थिती</th>
-                        <th className="py-2 px-3">शिक्षण</th>
+                        <th className="py-2.5 px-3">{t.fMemberName}</th>
+                        <th className="py-2.5 px-3">{t.fAge}</th>
+                        <th className="py-2.5 px-3">{t.fRelationship}</th>
+                        <th className="py-2.5 px-3">{t.fMaritalStatus}</th>
+                        <th className="py-2.5 px-3">{t.fEducation}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {selectedFamily.members && selectedFamily.members.length > 0 ? (
                         selectedFamily.members.map((m, i) => (
                           <tr key={i} className="hover:bg-slate-50/50">
-                            <td className="py-2 px-3 font-medium text-slate-900">{m.member_name}</td>
-                            <td className="py-2 px-3">{m.age || '-'}</td>
-                            <td className="py-2 px-3">{m.relationship}</td>
-                            <td className="py-2 px-3">{m.marital_status}</td>
-                            <td className="py-2 px-3">{m.education || '-'}</td>
+                            <td className="py-2.5 px-3 font-semibold text-slate-900">{m.member_name}</td>
+                            <td className="py-2.5 px-3">{m.age || '-'}</td>
+                            <td className="py-2.5 px-3">{m.relationship}</td>
+                            <td className="py-2.5 px-3">{m.marital_status}</td>
+                            <td className="py-2.5 px-3">{m.education || '-'}</td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td className="py-2 px-3 font-medium text-slate-900">{selectedFamily.head_name}</td>
-                          <td className="py-2 px-3">-</td>
-                          <td className="py-2 px-3">स्वतः</td>
-                          <td className="py-2 px-3">-</td>
-                          <td className="py-2 px-3">-</td>
+                          <td className="py-2.5 px-3 font-semibold text-slate-900">{selectedFamily.head_name}</td>
+                          <td className="py-2.5 px-3">-</td>
+                          <td className="py-2.5 px-3">Self</td>
+                          <td className="py-2.5 px-3">-</td>
+                          <td className="py-2.5 px-3">-</td>
                         </tr>
                       )}
                     </tbody>
@@ -456,73 +447,73 @@ export const SurveyList: React.FC<SurveyListProps> = ({
               </div>
 
               {/* Grid of Key Info */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 bg-slate-50 p-5 rounded-2xl border border-slate-200">
                 <div>
-                  <span className="text-slate-400 block text-[11px]">सामाजिक आर्थिक स्तर</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fEconomicStatus}</span>
                   <span className="font-bold text-slate-800 text-sm">{selectedFamily.economic_status}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">जात / प्रवर्ग</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fCaste}</span>
                   <span className="font-semibold text-slate-800">{selectedFamily.caste || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">बचत गट (SHG)</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.shg_name || 'नाही'}</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fShg}</span>
+                  <span className="font-semibold text-slate-800">{selectedFamily.shg_name || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">मुख्य उत्पन्न स्त्रोत</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.income_source}</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fIncomeSource}</span>
+                  <span className="font-semibold text-slate-800">{selectedFamily.income_source || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">मासिक सरासरी उत्पन्न</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fMonthlyIncome}</span>
                   <span className="font-bold text-emerald-700">₹{selectedFamily.monthly_income?.toLocaleString('en-IN') || 0}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">महिलेचे कौशल्य</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fWomenSkills}</span>
                   <span className="font-semibold text-slate-800">{selectedFamily.women_skills || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">शेती जमीन</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.farm_land || 'नाही'}</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fFarmLand}</span>
+                  <span className="font-semibold text-slate-800">{selectedFamily.farm_land || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">पाण्याचे स्त्रोत</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fWaterSource}</span>
                   <span className="font-semibold text-slate-800">{selectedFamily.water_source || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">पशुधन</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.livestock || 'नाही'}</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fLivestock}</span>
+                  <span className="font-semibold text-slate-800">{selectedFamily.livestock || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">साधन / मशीन</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.tools_machines || 'नाही'}</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fTools}</span>
+                  <span className="font-semibold text-slate-800">{selectedFamily.tools_machines || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">घराचा प्रकार</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fHouseType}</span>
                   <span className="font-semibold text-slate-800">{selectedFamily.house_type || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">इंधन प्रकार</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fFuelType}</span>
                   <span className="font-semibold text-slate-800">{selectedFamily.fuel_type || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">वीज सुविधा</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.electricity ? 'होय (Yes)' : 'नाही (No)'}</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fElectricity}</span>
+                  <span className="font-semibold text-slate-800">{selectedFamily.electricity ? t.yes : t.no}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">शौचालय सुविधा</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.toilet ? 'होय (Yes)' : 'नाही (No)'}</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fToilet}</span>
+                  <span className="font-semibold text-slate-800">{selectedFamily.toilet ? t.yes : t.no}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">अपंग सदस्य</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.has_disabled ? 'होय (Yes)' : 'नाही (No)'}</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fDisabled}</span>
+                  <span className="font-semibold text-slate-800">{selectedFamily.has_disabled ? t.yes : t.no}</span>
                 </div>
                 <div className="col-span-2">
-                  <span className="text-slate-400 block text-[11px]">योजना लाभ</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fSchemes}</span>
                   <span className="font-semibold text-slate-800">{selectedFamily.scheme_benefits || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">इंटरनेट सुविधा</span>
+                  <span className="text-slate-400 block text-[11px]">{t.fInternet}</span>
                   <span className="font-semibold text-slate-800">{selectedFamily.internet_access || '-'}</span>
                 </div>
               </div>
@@ -532,9 +523,9 @@ export const SurveyList: React.FC<SurveyListProps> = ({
             <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
               <button
                 onClick={() => setSelectedFamily(null)}
-                className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-semibold rounded-xl transition-colors"
+                className="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
               >
-                बंद करा (Close)
+                {t.btnClose}
               </button>
             </div>
           </div>
