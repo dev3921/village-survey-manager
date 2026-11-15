@@ -1,23 +1,31 @@
 import React, { useState } from 'react';
 import { dbService } from '../lib/db';
-import { Building2, KeyRound, ArrowRight, LogIn } from 'lucide-react';
+import { isSupabaseConfigured } from '../lib/supabase';
+import { Building2, KeyRound, AlertTriangle } from 'lucide-react';
 
 interface AuthPageProps {
   onSuccess: () => void;
 }
 
-export const AuthPage: React.FC<AuthPageProps> = ({ onSuccess }) => {
+export const AuthPage: React.FC<AuthPageProps> = () => {
   const [referralCode, setReferralCode] = useState('');
-  const [joiningTeam, setJoiningTeam] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+
+  const configured = isSupabaseConfigured();
 
   const handleGoogleLogin = async () => {
     setError(null);
-    // Store referral code in localStorage so we can use it after redirect
+
+    if (!configured) {
+      setError('कृपया .env फाईलमध्ये Supabase URL आणि Anon Key प्रविष्ट करा (Please configure Supabase credentials in .env)');
+      return;
+    }
+
+    // Store referral code in localStorage so we can link team after OAuth redirect
     if (referralCode.trim()) {
       localStorage.setItem('vsm_pending_referral', referralCode.trim().toUpperCase());
     }
+
     try {
       await dbService.auth.signInWithGoogle();
     } catch (err: any) {
@@ -43,15 +51,21 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onSuccess }) => {
 
           {/* Login Body */}
           <div className="p-6 sm:p-8 space-y-6">
-            {error && (
-              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-medium">
-                {error}
+            {!configured && (
+              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2.5">
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="font-bold">Supabase सेटअप आवश्यक आहे</p>
+                  <p className="text-amber-800/90 text-[11px] leading-relaxed">
+                    Google लॉगिन जोडण्यासाठी <code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-bold">.env</code> मध्ये आपले Supabase URL व Anon Key टाका.
+                  </p>
+                </div>
               </div>
             )}
 
-            {success && (
-              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium">
-                {success}
+            {error && (
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium">
+                {error}
               </div>
             )}
 
@@ -78,7 +92,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onSuccess }) => {
             {/* Google Sign In Button */}
             <button
               onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center gap-3 px-5 py-3.5 bg-white border-2 border-slate-200 rounded-2xl text-slate-800 font-semibold text-sm hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] transition-all shadow-xs"
+              className="w-full flex items-center justify-center gap-3 px-5 py-3.5 bg-white border-2 border-slate-200 rounded-2xl text-slate-800 font-semibold text-sm hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] transition-all shadow-xs cursor-pointer"
             >
               {/* Google G Icon */}
               <svg className="w-5 h-5" viewBox="0 0 24 24">
