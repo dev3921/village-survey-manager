@@ -47,8 +47,13 @@ export const translations = {
     roleAdmin: 'ऍडमिन',
     roleWorker: 'सर्व्हेक्षक',
     logout: 'बाहेर पडा',
+    themeLight: 'लाइट मोड',
+    themeDark: 'डार्क मोड',
 
     // Auth Page
+    portalTitle: 'ग्राम कुटुंब सर्वेक्षण प्रणाली',
+    portalSubtitle: 'अधिकृत प्रशासकीय व क्षेत्रीय लॉगिन पोर्टल',
+    officialAccessOnly: 'फक्त अधिकृत क्षेत्रीय प्रतिनिधी व ऍडमिन यांच्या वापरासाठी.',
     loginBadge: 'डिजिटल कुटुंब सर्वेक्षण व्यासपीठ',
     loginHeading: 'ग्राम कुटुंब सर्वेक्षण प्रणाली',
     loginDesc: 'गावातील सर्व कुटुंबांचे सामाजिक, आर्थिक, शेती व पायाभूत सुविधांचे सुरक्षित सर्वेक्षण व व्यवस्थापन.',
@@ -203,8 +208,13 @@ export const translations = {
     roleAdmin: 'Admin',
     roleWorker: 'Field Worker',
     logout: 'Sign Out',
+    themeLight: 'Light Mode',
+    themeDark: 'Dark Mode',
 
     // Auth Page
+    portalTitle: 'Village Survey Management Portal',
+    portalSubtitle: 'Official Administrative & Field Survey Portal',
+    officialAccessOnly: 'Authorized field personnel and administrators only.',
     loginBadge: 'Digital Household Survey Platform',
     loginHeading: 'Village Survey Management Portal',
     loginDesc: 'Secure census, socio-economic, agriculture and livelihood survey management for field teams and administrators.',

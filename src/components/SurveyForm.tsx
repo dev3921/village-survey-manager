@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import type { Family, FamilyFormData, FamilyMember } from '../lib/types';
-import { useLanguage, translations } from '../lib/i18n';
-import { 
+import type { Family, FamilyFormData } from '../lib/types';
+import {
   getEconomicStatusOptions,
-  getHouseTypeOptions,
+  getCasteOptions,
+  getIncomeSourceOptions,
   getWaterSourceOptions,
+  getHouseTypeOptions,
   getFuelTypeOptions,
+  getInternetAccessOptions,
   getRelationshipOptions,
   getMaritalStatusOptions,
-  getIncomeSourceOptions,
-  getCasteOptions,
-  getInternetAccessOptions
 } from '../lib/constants';
+import { useLanguage, translations } from '../lib/i18n';
 import { 
   Plus, 
   Trash2, 
   Save, 
   ArrowLeft, 
+  FileCheck2, 
   Users, 
-  FileCheck2
+  AlertCircle
 } from 'lucide-react';
 
 interface SurveyFormProps {
@@ -37,76 +38,86 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
   const [lang] = useLanguage();
   const t = translations[lang];
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Form options based on current language
   const economicOptions = getEconomicStatusOptions();
-  const houseOptions = getHouseTypeOptions(lang);
+  const casteOptions = getCasteOptions(lang);
+  const incomeOptions = getIncomeSourceOptions(lang);
   const waterOptions = getWaterSourceOptions(lang);
+  const houseOptions = getHouseTypeOptions(lang);
   const fuelOptions = getFuelTypeOptions(lang);
+  const internetOptions = getInternetAccessOptions(lang);
   const relationshipOptions = getRelationshipOptions(lang);
   const maritalOptions = getMaritalStatusOptions(lang);
-  const incomeOptions = getIncomeSourceOptions(lang);
-  const casteOptions = getCasteOptions(lang);
-  const internetOptions = getInternetAccessOptions(lang);
 
-  // Form state
+  // Form states
   const [serialNo, setSerialNo] = useState<number>(initialData?.serial_no || nextSerialNo);
-  const [villageName, setVillageName] = useState<string>(initialData?.village_name || '');
-  const [headName, setHeadName] = useState<string>(initialData?.head_name || '');
-  const [totalMembers, setTotalMembers] = useState<number>(initialData?.total_members || 1);
-  const [economicStatus, setEconomicStatus] = useState<string>(initialData?.economic_status || 'BPL');
+  const [villageName, setVillageName] = useState(initialData?.village_name || '');
+  const [headName, setHeadName] = useState(initialData?.head_name || '');
+  const [totalMembers, setTotalMembers] = useState<number>(
+    initialData?.total_members || initialData?.members?.length || 1
+  );
+  const [economicStatus, setEconomicStatus] = useState<string>(
+    initialData?.economic_status || economicOptions[0]
+  );
   const [caste, setCaste] = useState<string>(initialData?.caste || casteOptions[0]);
-  const [shgName, setShgName] = useState<string>(initialData?.shg_name || '');
-  const [incomeSource, setIncomeSource] = useState<string>(initialData?.income_source || incomeOptions[0]);
-  const [womenSkills, setWomenSkills] = useState<string>(initialData?.women_skills || '');
+  const [shgName, setSHGName] = useState(initialData?.shg_name || '');
+  const [incomeSource, setIncomeSource] = useState<string>(
+    initialData?.income_source || incomeOptions[0]
+  );
+  const [womenSkills, setWomenSkills] = useState(initialData?.women_skills || '');
   const [monthlyIncome, setMonthlyIncome] = useState<number>(initialData?.monthly_income || 0);
-  const [farmLand, setFarmLand] = useState<string>(initialData?.farm_land || '');
-  const [waterSource, setWaterSource] = useState<string>(initialData?.water_source || waterOptions[0]);
-  const [livestock, setLivestock] = useState<string>(initialData?.livestock || '');
-  const [toolsMachines, setToolsMachines] = useState<string>(initialData?.tools_machines || '');
-  const [houseType, setHouseType] = useState<string>(initialData?.house_type || houseOptions[0]);
+  const [farmLand, setFarmLand] = useState(initialData?.farm_land || '');
+  const [waterSource, setWaterSource] = useState<string>(
+    initialData?.water_source || waterOptions[0]
+  );
+  const [livestock, setLivestock] = useState(initialData?.livestock || '');
+  const [toolsMachines, setToolsMachines] = useState(initialData?.tools_machines || '');
+  const [houseType, setHouseType] = useState<string>(
+    initialData?.house_type || houseOptions[0]
+  );
   const [electricity, setElectricity] = useState<boolean>(initialData?.electricity ?? true);
   const [toilet, setToilet] = useState<boolean>(initialData?.toilet ?? true);
   const [fuelType, setFuelType] = useState<string>(initialData?.fuel_type || fuelOptions[0]);
   const [hasDisabled, setHasDisabled] = useState<boolean>(initialData?.has_disabled ?? false);
-  const [schemeBenefits, setSchemeBenefits] = useState<string>(initialData?.scheme_benefits || '');
-  const [internetAccess, setInternetAccess] = useState<string>(initialData?.internet_access || internetOptions[0]);
+  const [schemeBenefits, setSchemeBenefits] = useState(initialData?.scheme_benefits || '');
+  const [internetAccess, setInternetAccess] = useState<string>(
+    initialData?.internet_access || internetOptions[0]
+  );
 
-  // Dynamic Family Members state
-  const [members, setMembers] = useState<Omit<FamilyMember, 'id' | 'family_id' | 'created_at'>[]>(() => {
+  // Member sub-rows
+  const [members, setMembers] = useState<FamilyFormData['members']>(() => {
     if (initialData?.members && initialData.members.length > 0) {
       return initialData.members.map((m) => ({
         member_name: m.member_name,
         age: m.age,
         relationship: m.relationship,
         marital_status: m.marital_status,
-        education: m.education,
+        education: m.education || '',
       }));
     }
     return [
       {
         member_name: initialData?.head_name || '',
-        age: 45,
-        relationship: relationshipOptions[0],
-        marital_status: maritalOptions[0],
-        education: lang === 'mr' ? '१० वी' : '10th Secondary',
+        age: 35,
+        relationship: relationshipOptions[0] || 'Self',
+        marital_status: maritalOptions[0] || 'Married',
+        education: lang === 'mr' ? '१० वी' : '10th',
       },
     ];
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Keep totalMembers synced with members count
   useEffect(() => {
-    if (members.length > 0) {
-      setTotalMembers(members.length);
-    }
+    setTotalMembers(members.length);
   }, [members.length]);
 
   const handleHeadNameChange = (val: string) => {
     setHeadName(val);
-    if (members.length > 0 && (!members[0].member_name || members[0].member_name === headName)) {
+    if (members.length > 0) {
       const updated = [...members];
-      updated[0].member_name = val;
+      updated[0] = { ...updated[0], member_name: val };
       setMembers(updated);
     }
   };
@@ -119,7 +130,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
         age: 25,
         relationship: relationshipOptions[1] || 'Member',
         marital_status: maritalOptions[0] || 'Married',
-        education: lang === 'mr' ? '१० वी' : 'Secondary',
+        education: lang === 'mr' ? '१० वी' : '10th',
       },
     ]);
   };
@@ -190,18 +201,18 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className="max-w-5xl mx-auto space-y-8 pb-16">
       {/* Top Header Card */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors">
         <div>
           <button
             type="button"
             onClick={onCancel}
-            className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 mb-2 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 mb-2 transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>{t.btnBack}</span>
           </button>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-            <FileCheck2 className="w-6 h-6 text-emerald-600" />
+          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+            <FileCheck2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
             <span>{initialData ? t.formEditTitle : t.formNewTitle}</span>
           </h2>
         </div>
@@ -210,7 +221,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 sm:flex-none px-4 py-2 border border-slate-200 text-slate-700 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-colors cursor-pointer"
+            className="flex-1 sm:flex-none px-4 py-2 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             {t.btnCancel}
           </button>
@@ -226,68 +237,69 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
       </div>
 
       {error && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-medium">
+        <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 text-rose-800 dark:text-rose-300 text-xs font-semibold flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
       )}
 
       {/* SECTION 1: Basic Info */}
-      <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-6">
-        <div className="pb-4 border-b border-slate-100">
-          <h3 className="font-extrabold text-slate-900 text-base">{t.sec1Title}</h3>
-          <p className="text-xs text-slate-500 mt-0.5">{t.sec1Desc}</p>
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 transition-colors">
+        <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
+          <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.sec1Title}</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.sec1Desc}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fSrNo}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fSrNo}</label>
             <input
               type="number"
               value={serialNo}
               onChange={(e) => setSerialNo(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+              className="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fVillage}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fVillage}</label>
             <input
               type="text"
               value={villageName}
               onChange={(e) => setVillageName(e.target.value)}
               placeholder={t.fVillagePlaceholder}
-              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+              className="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
             />
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              {t.fHeadName} <span className="text-emerald-600">*</span>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+              {t.fHeadName} <span className="text-emerald-600 dark:text-emerald-400">*</span>
             </label>
             <input
               type="text"
               value={headName}
               onChange={(e) => handleHeadNameChange(e.target.value)}
               placeholder={t.fHeadPlaceholder}
-              className="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+              className="w-full px-3.5 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fTotalMembers}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fTotalMembers}</label>
             <input
               type="number"
               min="1"
               value={totalMembers}
               onChange={(e) => setTotalMembers(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-hidden bg-slate-50 font-bold"
+              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-bold"
             />
           </div>
 
           <div className="sm:col-span-3">
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fEconomicStatus}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fEconomicStatus}</label>
             <div className="flex gap-2">
               {economicOptions.map((opt) => (
                 <button
@@ -297,7 +309,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                   className={`px-5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                     economicStatus === opt
                       ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                   }`}
                 >
                   {opt}
@@ -309,17 +321,17 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
       </div>
 
       {/* SECTION 2: Dynamic Family Members */}
-      <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-6">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 transition-colors">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
           <div>
-            <h3 className="font-extrabold text-slate-900 text-base">{t.sec2Title}</h3>
-            <p className="text-xs text-slate-500 mt-0.5">{t.sec2Desc}</p>
+            <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.sec2Title}</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.sec2Desc}</p>
           </div>
 
           <button
             type="button"
             onClick={handleAddMember}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-bold rounded-xl border border-blue-200 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-xs font-bold rounded-xl border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>{t.btnAddMember}</span>
@@ -330,11 +342,11 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
           {members.map((member, index) => (
             <div
               key={index}
-              className="p-4 sm:p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-blue-200 transition-all space-y-3"
+              className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800/80 hover:border-blue-200 dark:hover:border-blue-700 transition-all space-y-3"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5 text-blue-600" />
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                   {lang === 'mr' ? `सदस्य #${index + 1}` : `Member #${index + 1}`}
                 </span>
 
@@ -342,7 +354,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                   <button
                     type="button"
                     onClick={() => handleRemoveMember(index)}
-                    className="p-1.5 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+                    className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -351,33 +363,33 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                 <div className="lg:col-span-2">
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t.fMemberName}</label>
+                  <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">{t.fMemberName}</label>
                   <input
                     type="text"
                     value={member.member_name}
                     onChange={(e) => handleMemberChange(index, 'member_name', e.target.value)}
                     placeholder={t.fMemberPlaceholder}
-                    className="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs bg-white focus:ring-2 focus:ring-blue-500 focus:outline-hidden font-semibold"
+                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500 focus:outline-hidden font-semibold"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t.fAge}</label>
+                  <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">{t.fAge}</label>
                   <input
                     type="number"
                     value={member.age ?? ''}
                     onChange={(e) => handleMemberChange(index, 'age', e.target.value ? Number(e.target.value) : null)}
-                    className="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs bg-white focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t.fRelationship}</label>
+                  <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">{t.fRelationship}</label>
                   <select
                     value={member.relationship}
                     onChange={(e) => handleMemberChange(index, 'relationship', e.target.value)}
-                    className="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs bg-white focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
                   >
                     {relationshipOptions.map((r) => (
                       <option key={r} value={r}>{r}</option>
@@ -386,11 +398,11 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t.fMaritalStatus}</label>
+                  <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">{t.fMaritalStatus}</label>
                   <select
                     value={member.marital_status}
                     onChange={(e) => handleMemberChange(index, 'marital_status', e.target.value)}
-                    className="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs bg-white focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
                   >
                     {maritalOptions.map((m) => (
                       <option key={m} value={m}>{m}</option>
@@ -399,13 +411,13 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                 </div>
 
                 <div className="sm:col-span-2 lg:col-span-5">
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t.fEducation}</label>
+                  <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">{t.fEducation}</label>
                   <input
                     type="text"
                     value={member.education}
                     onChange={(e) => handleMemberChange(index, 'education', e.target.value)}
                     placeholder={lang === 'mr' ? 'उदा. १० वी / पदवी' : 'e.g. 10th / Graduate'}
-                    className="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs bg-white focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
                   />
                 </div>
               </div>
@@ -415,19 +427,19 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
       </div>
 
       {/* SECTION 3: Socio-Economic */}
-      <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-6">
-        <div className="pb-4 border-b border-slate-100">
-          <h3 className="font-extrabold text-slate-900 text-base">{t.sec3Title}</h3>
-          <p className="text-xs text-slate-500 mt-0.5">{t.sec3Desc}</p>
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 transition-colors">
+        <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
+          <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.sec3Title}</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.sec3Desc}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fCaste}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fCaste}</label>
             <select
               value={caste}
               onChange={(e) => setCaste(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
             >
               {casteOptions.map((c) => (
                 <option key={c} value={c}>{c}</option>
@@ -436,22 +448,22 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fShg}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fShg}</label>
             <input
               type="text"
               value={shgName}
-              onChange={(e) => setShgName(e.target.value)}
+              onChange={(e) => setSHGName(e.target.value)}
               placeholder={t.fShgPlaceholder}
-              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fIncomeSource}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fIncomeSource}</label>
             <select
               value={incomeSource}
               onChange={(e) => setIncomeSource(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
             >
               {incomeOptions.map((s) => (
                 <option key={s} value={s}>{s}</option>
@@ -460,51 +472,51 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fWomenSkills}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fWomenSkills}</label>
             <input
               type="text"
               value={womenSkills}
               onChange={(e) => setWomenSkills(e.target.value)}
               placeholder={t.fWomenSkillsPlaceholder}
-              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fMonthlyIncome}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fMonthlyIncome}</label>
             <input
               type="number"
               min="0"
               step="500"
               value={monthlyIncome}
               onChange={(e) => setMonthlyIncome(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-bold text-emerald-700"
+              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-950 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-bold text-emerald-700 dark:text-emerald-400"
             />
           </div>
         </div>
       </div>
 
       {/* SECTION 4: Land & Housing */}
-      <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-6">
-        <div className="pb-4 border-b border-slate-100">
-          <h3 className="font-extrabold text-slate-900 text-base">{t.sec4Title}</h3>
-          <p className="text-xs text-slate-500 mt-0.5">{t.sec4Desc}</p>
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 transition-colors">
+        <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
+          <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.sec4Title}</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.sec4Desc}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fFarmLand}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fFarmLand}</label>
             <input
               type="text"
               value={farmLand}
               onChange={(e) => setFarmLand(e.target.value)}
               placeholder={t.fFarmLandPlaceholder}
-              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fWaterSource}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fWaterSource}</label>
             <div className="flex flex-wrap gap-1.5">
               {waterOptions.map((w) => (
                 <button
@@ -514,7 +526,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${
                     waterSource === w
                       ? 'bg-teal-600 text-white border-teal-600 shadow-2xs'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                   }`}
                 >
                   {w}
@@ -524,29 +536,29 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fLivestock}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fLivestock}</label>
             <input
               type="text"
               value={livestock}
               onChange={(e) => setLivestock(e.target.value)}
               placeholder={t.fLivestockPlaceholder}
-              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fTools}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fTools}</label>
             <input
               type="text"
               value={toolsMachines}
               onChange={(e) => setToolsMachines(e.target.value)}
               placeholder={t.fToolsPlaceholder}
-              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fHouseType}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fHouseType}</label>
             <div className="flex gap-2">
               {houseOptions.map((h) => (
                 <button
@@ -556,7 +568,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                   className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                     houseType === h
                       ? 'bg-teal-600 text-white border-teal-600 shadow-2xs'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                   }`}
                 >
                   {h}
@@ -568,21 +580,21 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
       </div>
 
       {/* SECTION 5: Utilities & Schemes */}
-      <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-6">
-        <div className="pb-4 border-b border-slate-100">
-          <h3 className="font-extrabold text-slate-900 text-base">{t.sec5Title}</h3>
-          <p className="text-xs text-slate-500 mt-0.5">{t.sec5Desc}</p>
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 transition-colors">
+        <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
+          <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.sec5Title}</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.sec5Desc}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fElectricity}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fElectricity}</label>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setElectricity(true)}
                 className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                  electricity ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                  electricity ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
                 {t.yes}
@@ -591,7 +603,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                 type="button"
                 onClick={() => setElectricity(false)}
                 className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                  !electricity ? 'bg-rose-600 text-white border-rose-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                  !electricity ? 'bg-rose-600 text-white border-rose-600' : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
                 {t.no}
@@ -600,13 +612,13 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fToilet}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fToilet}</label>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setToilet(true)}
                 className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                  toilet ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                  toilet ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
                 {t.yes}
@@ -615,7 +627,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                 type="button"
                 onClick={() => setToilet(false)}
                 className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                  !toilet ? 'bg-rose-600 text-white border-rose-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                  !toilet ? 'bg-rose-600 text-white border-rose-600' : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
                 {t.no}
@@ -624,7 +636,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fFuelType}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fFuelType}</label>
             <div className="flex flex-wrap gap-1.5">
               {fuelOptions.map((f) => (
                 <button
@@ -632,7 +644,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                   key={f}
                   onClick={() => setFuelType(f)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${
-                    fuelType === f ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                    fuelType === f ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                   }`}
                 >
                   {f}
@@ -642,13 +654,13 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fDisabled}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fDisabled}</label>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setHasDisabled(true)}
                 className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                  hasDisabled ? 'bg-amber-600 text-white border-amber-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                  hasDisabled ? 'bg-amber-600 text-white border-amber-600' : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
                 {t.yes}
@@ -657,7 +669,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                 type="button"
                 onClick={() => setHasDisabled(false)}
                 className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                  !hasDisabled ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                  !hasDisabled ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
                 {t.no}
@@ -666,18 +678,18 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fSchemes}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fSchemes}</label>
             <input
               type="text"
               value={schemeBenefits}
               onChange={(e) => setSchemeBenefits(e.target.value)}
               placeholder={t.fSchemesPlaceholder}
-              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
             />
           </div>
 
           <div className="sm:col-span-3">
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">{t.fInternet}</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fInternet}</label>
             <div className="flex flex-wrap gap-2">
               {internetOptions.map((opt) => (
                 <button
@@ -687,7 +699,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                   className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                     internetAccess === opt
                       ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                   }`}
                 >
                   {opt}
@@ -699,17 +711,17 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
       </div>
 
       {/* Bottom Sticky Action Bar */}
-      <div className="bg-white/95 backdrop-blur-md rounded-3xl p-4 border border-slate-200 shadow-lg flex items-center justify-between gap-4 sticky bottom-4 z-30">
-        <div className="text-xs text-slate-500">
-          {t.fHeadName}: <span className="font-bold text-slate-800">{headName || '-'}</span> ·{' '}
-          {t.fTotalMembers}: <span className="font-bold text-slate-800">{members.length}</span>
+      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-lg flex items-center justify-between gap-4 sticky bottom-4 z-30 transition-colors">
+        <div className="text-xs text-slate-500 dark:text-slate-400">
+          {t.fHeadName}: <span className="font-bold text-slate-800 dark:text-slate-200">{headName || '-'}</span> ·{' '}
+          {t.fTotalMembers}: <span className="font-bold text-slate-800 dark:text-slate-200">{members.length}</span>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-colors cursor-pointer"
+            className="px-4 py-2 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             {t.btnCancel}
           </button>

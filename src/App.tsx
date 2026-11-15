@@ -7,8 +7,10 @@ import { SurveyList } from './components/SurveyList';
 import { SurveyForm } from './components/SurveyForm';
 import { AdminTeamView } from './components/AdminTeamView';
 import { AuthPage } from './components/AuthPage';
+import { useTheme } from './lib/theme';
 
 export function App() {
+  useTheme(); // Initialize theme on mount
   const [profile, setProfile] = useState<Profile | null>(null);
   const [team, setTeam] = useState<Team | null>(null);
   const [families, setFamilies] = useState<Family[]>([]);
@@ -140,7 +142,7 @@ export function App() {
   const nextSerial = families.length > 0 ? Math.max(...families.map((f) => f.serial_no || 0)) + 1 : 1;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors">
       {/* Top Navbar */}
       <Navbar
         profile={profile}

@@ -93,70 +93,70 @@ export const SurveyList: React.FC<SurveyListProps> = ({
       {/* Metrics Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {/* Total Families */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between transition-colors">
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               {t.statFamilies}
             </p>
-            <p className="text-2xl font-bold text-slate-900 mt-1">{metrics.totalFamilies}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">{t.statFamiliesDesc}</p>
+            <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{metrics.totalFamilies}</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{t.statFamiliesDesc}</p>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
             <Building2 className="w-6 h-6" />
           </div>
         </div>
 
         {/* Total Members */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between transition-colors">
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               {t.statMembers}
             </p>
-            <p className="text-2xl font-bold text-slate-900 mt-1">{metrics.totalMembers}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">{t.statMembersDesc}</p>
+            <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{metrics.totalMembers}</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{t.statMembersDesc}</p>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
             <Users className="w-6 h-6" />
           </div>
         </div>
 
         {/* BPL / APL Ratio */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between transition-colors">
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               {t.statEconomic}
             </p>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-bold text-amber-600">{metrics.bplCount} BPL</span>
-              <span className="text-xs text-slate-400 font-medium">/ {metrics.aplCount} APL</span>
+              <span className="text-2xl font-bold text-amber-600 dark:text-amber-400">{metrics.bplCount} BPL</span>
+              <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">/ {metrics.aplCount} APL</span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-0.5">{t.statEconomicDesc}</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{t.statEconomicDesc}</p>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center">
             <TrendingUp className="w-6 h-6" />
           </div>
         </div>
 
         {/* Basic Amenities */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between transition-colors">
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               {t.statAmenities}
             </p>
-            <div className="flex items-center gap-3 mt-1 text-sm font-bold text-slate-800">
+            <div className="flex items-center gap-3 mt-1 text-sm font-bold text-slate-800 dark:text-slate-200">
               <span>⚡ {metrics.electricityCount}</span>
               <span>🚽 {metrics.toiletCount}</span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-0.5">{t.statAmenitiesDesc}</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{t.statAmenitiesDesc}</p>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
             <Zap className="w-6 h-6" />
           </div>
         </div>
       </div>
 
       {/* Action Bar (Search, Filters, Exports, New Survey) */}
-      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 transition-colors">
         {/* Search input */}
         <div className="flex-1 relative">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -165,7 +165,7 @@ export const SurveyList: React.FC<SurveyListProps> = ({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={t.searchPlaceholder}
-            className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
           />
         </div>
 
@@ -174,7 +174,7 @@ export const SurveyList: React.FC<SurveyListProps> = ({
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white text-slate-700 font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+            className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-200 font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
           >
             <option value="all">{t.filterAllStatus}</option>
             <option value="BPL">{t.filterBPL}</option>
@@ -184,7 +184,7 @@ export const SurveyList: React.FC<SurveyListProps> = ({
           <select
             value={houseFilter}
             onChange={(e) => setHouseFilter(e.target.value)}
-            className="px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white text-slate-700 font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+            className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-200 font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
           >
             <option value="all">{t.filterAllHouse}</option>
             <option value="पक्का">{t.filterPucca}</option>
@@ -194,25 +194,25 @@ export const SurveyList: React.FC<SurveyListProps> = ({
           {/* Export Excel */}
           <button
             onClick={() => exportFamiliesToExcel(filteredFamilies)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-colors cursor-pointer"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             <span>{t.btnExcel}</span>
           </button>
 
           {/* Export PDF */}
           <button
             onClick={() => exportFamiliesToPDF(filteredFamilies)}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
           >
-            <Download className="w-3.5 h-3.5 text-slate-600" />
+            <Download className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
             <span>{t.btnPdf}</span>
           </button>
 
           {/* New Survey Button */}
           <button
             onClick={onNewSurvey}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-xs transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-xs transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>{t.btnNew}</span>
@@ -221,19 +221,19 @@ export const SurveyList: React.FC<SurveyListProps> = ({
       </div>
 
       {/* Main Surveys Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
         {filteredFamilies.length === 0 ? (
           <div className="text-center py-16 px-4">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-4">
               <FileSpreadsheet className="w-8 h-8" />
             </div>
-            <h3 className="text-base font-bold text-slate-900">{t.emptyTitle}</h3>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-6">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">{t.emptyTitle}</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1 mb-6">
               {t.emptyDesc}
             </p>
             <button
               onClick={onNewSurvey}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>{t.emptyBtn}</span>
@@ -243,7 +243,7 @@ export const SurveyList: React.FC<SurveyListProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 uppercase font-bold tracking-wider text-[11px]">
+                <tr className="bg-slate-50/80 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 uppercase font-bold tracking-wider text-[11px]">
                   <th className="py-3.5 px-4 w-12 text-center">{t.thSr}</th>
                   <th className="py-3.5 px-4">{t.thHead}</th>
                   <th className="py-3.5 px-4 text-center">{t.thMembers}</th>
@@ -254,28 +254,28 @@ export const SurveyList: React.FC<SurveyListProps> = ({
                   <th className="py-3.5 px-4 text-right">{t.thActions}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                 {filteredFamilies.map((fam, idx) => (
-                  <tr key={fam.id} className="hover:bg-slate-50/60 transition-colors">
+                  <tr key={fam.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors">
                     {/* Serial No */}
-                    <td className="py-3.5 px-4 text-center font-bold text-slate-500">
+                    <td className="py-3.5 px-4 text-center font-bold text-slate-500 dark:text-slate-400">
                       {fam.serial_no || idx + 1}
                     </td>
 
                     {/* Head Name & Village */}
                     <td className="py-3.5 px-4">
-                      <div className="font-bold text-slate-900 text-sm">{fam.head_name}</div>
-                      <div className="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1.5">
-                        <span className="font-medium text-emerald-700">📍 {fam.village_name || '-'}</span>
+                      <div className="font-bold text-slate-900 dark:text-white text-sm">{fam.head_name}</div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5">
+                        <span className="font-medium text-emerald-700 dark:text-emerald-400">📍 {fam.village_name || '-'}</span>
                         {fam.shg_name && (
-                          <span className="text-slate-400">· {fam.shg_name}</span>
+                          <span className="text-slate-400 dark:text-slate-500">· {fam.shg_name}</span>
                         )}
                       </div>
                     </td>
 
                     {/* Members Count */}
                     <td className="py-3.5 px-4 text-center">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                         <Users className="w-3 h-3" />
                         {fam.total_members || fam.members?.length || 1}
                       </span>
@@ -287,43 +287,43 @@ export const SurveyList: React.FC<SurveyListProps> = ({
                         <span
                           className={`px-2 py-0.5 rounded font-bold text-[10px] uppercase ${
                             fam.economic_status === 'BPL'
-                              ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                              : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                              ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
+                              : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
                           }`}
                         >
                           {fam.economic_status || 'BPL'}
                         </span>
-                        <span className="text-[11px] text-slate-600 truncate max-w-[120px]">{fam.caste}</span>
+                        <span className="text-[11px] text-slate-600 dark:text-slate-300 truncate max-w-[120px]">{fam.caste}</span>
                       </div>
                     </td>
 
                     {/* Income */}
                     <td className="py-3.5 px-4">
-                      <div className="font-semibold text-emerald-700">
+                      <div className="font-semibold text-emerald-700 dark:text-emerald-400">
                         {fam.monthly_income ? `₹${fam.monthly_income.toLocaleString('en-IN')}` : '-'}
                       </div>
-                      <div className="text-[11px] text-slate-500 truncate max-w-[130px]">
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[130px]">
                         {fam.income_source || '-'}
                       </div>
                     </td>
 
                     {/* House & Amenities */}
                     <td className="py-3.5 px-4">
-                      <div className="text-slate-800 font-medium">
+                      <div className="text-slate-800 dark:text-slate-200 font-medium">
                         {fam.house_type ? `${fam.house_type}` : '-'}
                       </div>
                       <div className="flex items-center gap-2 mt-0.5 text-[10px]">
-                        <span className={fam.electricity ? 'text-emerald-700' : 'text-slate-400'}>
+                        <span className={fam.electricity ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-400'}>
                           ⚡ {fam.electricity ? (lang === 'mr' ? 'वीज' : 'Power') : '-'}
                         </span>
-                        <span className={fam.toilet ? 'text-teal-700' : 'text-slate-400'}>
+                        <span className={fam.toilet ? 'text-teal-700 dark:text-teal-400' : 'text-slate-400'}>
                           🚽 {fam.toilet ? (lang === 'mr' ? 'शौचालय' : 'Toilet') : '-'}
                         </span>
                       </div>
                     </td>
 
                     {/* Date */}
-                    <td className="py-3.5 px-4 text-slate-400 text-[11px]">
+                    <td className="py-3.5 px-4 text-slate-400 dark:text-slate-500 text-[11px]">
                       {new Date(fam.created_at).toLocaleDateString(lang === 'mr' ? 'mr-IN' : 'en-US', {
                         day: 'numeric',
                         month: 'short',
@@ -335,7 +335,7 @@ export const SurveyList: React.FC<SurveyListProps> = ({
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => setSelectedFamily(fam)}
-                          className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/60 rounded-lg transition-colors cursor-pointer"
                           title="Details"
                         >
                           <Eye className="w-4 h-4" />
@@ -343,7 +343,7 @@ export const SurveyList: React.FC<SurveyListProps> = ({
 
                         <button
                           onClick={() => onEditSurvey(fam)}
-                          className="p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 rounded-lg transition-colors cursor-pointer"
                           title="Edit"
                         >
                           <Edit3 className="w-4 h-4" />
@@ -352,7 +352,7 @@ export const SurveyList: React.FC<SurveyListProps> = ({
                         <button
                           disabled={deletingId === fam.id}
                           onClick={() => handleDelete(fam.id, fam.head_name)}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+                          className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -370,15 +370,15 @@ export const SurveyList: React.FC<SurveyListProps> = ({
       {/* DETAIL MODAL */}
       {selectedFamily && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 dark:border-slate-800 transition-colors">
             {/* Modal Header */}
-            <div className="sticky top-0 bg-white p-5 border-b border-slate-200 flex items-center justify-between z-10">
+            <div className="sticky top-0 bg-white dark:bg-slate-900 p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between z-10 transition-colors">
               <div>
-                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
                   {t.thSr} #{selectedFamily.serial_no || 1}
                 </span>
-                <h3 className="text-xl font-bold text-slate-900 mt-1">{selectedFamily.head_name}</h3>
-                <p className="text-xs text-slate-500">{t.fVillage}: {selectedFamily.village_name || '-'}</p>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-1">{selectedFamily.head_name}</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{t.fVillage}: {selectedFamily.village_name || '-'}</p>
               </div>
 
               <div className="flex items-center gap-2">
@@ -388,14 +388,14 @@ export const SurveyList: React.FC<SurveyListProps> = ({
                     setSelectedFamily(null);
                     onEditSurvey(fam);
                   }}
-                  className="px-3.5 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-3.5 py-1.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <Edit3 className="w-3.5 h-3.5" />
                   <span>{t.btnEdit}</span>
                 </button>
                 <button
                   onClick={() => setSelectedFamily(null)}
-                  className="p-2 text-slate-400 hover:text-slate-700 rounded-lg transition-colors cursor-pointer"
+                  className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -403,16 +403,16 @@ export const SurveyList: React.FC<SurveyListProps> = ({
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 space-y-6 text-xs">
+            <div className="p-6 space-y-6 text-xs text-slate-700 dark:text-slate-300">
               {/* Member Roster */}
               <div>
-                <h4 className="font-bold text-slate-900 text-sm mb-3 flex items-center gap-2">
-                  <Users className="w-4 h-4 text-blue-600" />
+                <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-3 flex items-center gap-2">
+                  <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   <span>{t.sec2Title} ({selectedFamily.members?.length || 1})</span>
                 </h4>
-                <div className="border border-slate-200 rounded-xl overflow-hidden">
+                <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
                   <table className="w-full text-left">
-                    <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                    <thead className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-semibold">
                       <tr>
                         <th className="py-2.5 px-3">{t.fMemberName}</th>
                         <th className="py-2.5 px-3">{t.fAge}</th>
@@ -421,11 +421,11 @@ export const SurveyList: React.FC<SurveyListProps> = ({
                         <th className="py-2.5 px-3">{t.fEducation}</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                       {selectedFamily.members && selectedFamily.members.length > 0 ? (
                         selectedFamily.members.map((m, i) => (
-                          <tr key={i} className="hover:bg-slate-50/50">
-                            <td className="py-2.5 px-3 font-semibold text-slate-900">{m.member_name}</td>
+                          <tr key={i} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
+                            <td className="py-2.5 px-3 font-semibold text-slate-900 dark:text-white">{m.member_name}</td>
                             <td className="py-2.5 px-3">{m.age || '-'}</td>
                             <td className="py-2.5 px-3">{m.relationship}</td>
                             <td className="py-2.5 px-3">{m.marital_status}</td>
@@ -434,7 +434,7 @@ export const SurveyList: React.FC<SurveyListProps> = ({
                         ))
                       ) : (
                         <tr>
-                          <td className="py-2.5 px-3 font-semibold text-slate-900">{selectedFamily.head_name}</td>
+                          <td className="py-2.5 px-3 font-semibold text-slate-900 dark:text-white">{selectedFamily.head_name}</td>
                           <td className="py-2.5 px-3">-</td>
                           <td className="py-2.5 px-3">Self</td>
                           <td className="py-2.5 px-3">-</td>
@@ -447,83 +447,83 @@ export const SurveyList: React.FC<SurveyListProps> = ({
               </div>
 
               {/* Grid of Key Info */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60">
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fEconomicStatus}</span>
-                  <span className="font-bold text-slate-800 text-sm">{selectedFamily.economic_status}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fEconomicStatus}</span>
+                  <span className="font-bold text-slate-800 dark:text-white text-sm">{selectedFamily.economic_status}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fCaste}</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.caste || '-'}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fCaste}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedFamily.caste || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fShg}</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.shg_name || '-'}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fShg}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedFamily.shg_name || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fIncomeSource}</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.income_source || '-'}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fIncomeSource}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedFamily.income_source || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fMonthlyIncome}</span>
-                  <span className="font-bold text-emerald-700">₹{selectedFamily.monthly_income?.toLocaleString('en-IN') || 0}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fMonthlyIncome}</span>
+                  <span className="font-bold text-emerald-700 dark:text-emerald-400">₹{selectedFamily.monthly_income?.toLocaleString('en-IN') || 0}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fWomenSkills}</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.women_skills || '-'}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fWomenSkills}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedFamily.women_skills || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fFarmLand}</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.farm_land || '-'}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fFarmLand}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedFamily.farm_land || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fWaterSource}</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.water_source || '-'}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fWaterSource}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedFamily.water_source || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fLivestock}</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.livestock || '-'}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fLivestock}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedFamily.livestock || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fTools}</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.tools_machines || '-'}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fTools}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedFamily.tools_machines || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fHouseType}</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.house_type || '-'}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fHouseType}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedFamily.house_type || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fFuelType}</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.fuel_type || '-'}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fFuelType}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedFamily.fuel_type || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fElectricity}</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.electricity ? t.yes : t.no}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fElectricity}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedFamily.electricity ? t.yes : t.no}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fToilet}</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.toilet ? t.yes : t.no}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fToilet}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedFamily.toilet ? t.yes : t.no}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fDisabled}</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.has_disabled ? t.yes : t.no}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fDisabled}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedFamily.has_disabled ? t.yes : t.no}</span>
                 </div>
                 <div className="col-span-2">
-                  <span className="text-slate-400 block text-[11px]">{t.fSchemes}</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.scheme_benefits || '-'}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fSchemes}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedFamily.scheme_benefits || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[11px]">{t.fInternet}</span>
-                  <span className="font-semibold text-slate-800">{selectedFamily.internet_access || '-'}</span>
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">{t.fInternet}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedFamily.internet_access || '-'}</span>
                 </div>
               </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-800 flex justify-end transition-colors">
               <button
                 onClick={() => setSelectedFamily(null)}
-                className="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+                className="px-5 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
               >
                 {t.btnClose}
               </button>

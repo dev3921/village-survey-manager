@@ -62,7 +62,7 @@ export function exportFamiliesToExcel(families: Family[], filename = 'village_su
         fam.shg_name || '',
         fam.income_source || '',
         fam.women_skills || '',
-        fam.monthly_income ? `₹${fam.monthly_income}` : '',
+        fam.monthly_income !== null && fam.monthly_income !== undefined ? fam.monthly_income : '',
         fam.farm_land || '',
         fam.water_source || '',
         fam.livestock || '',

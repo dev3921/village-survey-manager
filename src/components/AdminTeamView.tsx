@@ -153,46 +153,46 @@ export const AdminTeamView: React.FC<AdminTeamViewProps> = ({
       </div>
 
       {/* How It Works Card */}
-      <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs">
-        <h3 className="font-bold text-slate-900 text-sm mb-4 flex items-center gap-2">
-          <KeyRound className="w-4 h-4 text-amber-600" />
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
+        <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-4 flex items-center gap-2">
+          <KeyRound className="w-4 h-4 text-amber-600 dark:text-amber-400" />
           <span>{t.howItWorksTitle}</span>
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-          <div className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100 text-center space-y-2">
-            <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center mx-auto text-sm">1</div>
-            <p className="font-bold text-slate-800">{t.step1Title}</p>
-            <p className="text-slate-500 text-[11px] leading-relaxed">{t.step1Desc}</p>
+          <div className="p-4 bg-emerald-50/50 dark:bg-emerald-950/30 rounded-2xl border border-emerald-100 dark:border-emerald-800/60 text-center space-y-2">
+            <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-bold flex items-center justify-center mx-auto text-sm">1</div>
+            <p className="font-bold text-slate-800 dark:text-slate-200">{t.step1Title}</p>
+            <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-relaxed">{t.step1Desc}</p>
           </div>
-          <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100 text-center space-y-2">
-            <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center mx-auto text-sm">2</div>
-            <p className="font-bold text-slate-800">{t.step2Title}</p>
-            <p className="text-slate-500 text-[11px] leading-relaxed">{t.step2Desc}</p>
+          <div className="p-4 bg-blue-50/50 dark:bg-blue-950/30 rounded-2xl border border-blue-100 dark:border-blue-800/60 text-center space-y-2">
+            <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold flex items-center justify-center mx-auto text-sm">2</div>
+            <p className="font-bold text-slate-800 dark:text-slate-200">{t.step2Title}</p>
+            <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-relaxed">{t.step2Desc}</p>
           </div>
-          <div className="p-4 bg-amber-50/50 rounded-2xl border border-amber-100 text-center space-y-2">
-            <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold flex items-center justify-center mx-auto text-sm">3</div>
-            <p className="font-bold text-slate-800">{t.step3Title}</p>
-            <p className="text-slate-500 text-[11px] leading-relaxed">{t.step3Desc}</p>
+          <div className="p-4 bg-amber-50/50 dark:bg-amber-950/30 rounded-2xl border border-amber-100 dark:border-amber-800/60 text-center space-y-2">
+            <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 font-bold flex items-center justify-center mx-auto text-sm">3</div>
+            <p className="font-bold text-slate-800 dark:text-slate-200">{t.step3Title}</p>
+            <p className="text-slate-500 dark:text-slate-400 text-[11px] leading-relaxed">{t.step3Desc}</p>
           </div>
         </div>
       </div>
 
       {/* Team Members Roster */}
-      <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4 transition-colors">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 flex items-center justify-center">
               <Users className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 text-sm">{t.teamRosterTitle}</h3>
-              <p className="text-[11px] text-slate-500">{members.length} {t.teamRosterSub}</p>
+              <h3 className="font-bold text-slate-900 dark:text-white text-sm">{t.teamRosterTitle}</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">{members.length} {t.teamRosterSub}</p>
             </div>
           </div>
 
           <button
             onClick={loadMembers}
-            className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg transition-colors cursor-pointer"
             title="Refresh"
           >
             <RefreshCw className="w-4 h-4" />
@@ -200,11 +200,11 @@ export const AdminTeamView: React.FC<AdminTeamViewProps> = ({
         </div>
 
         {members.length === 0 ? (
-          <div className="text-center py-10 text-slate-400 text-xs">
+          <div className="text-center py-10 text-slate-400 dark:text-slate-500 text-xs">
             {t.emptyTeam}
           </div>
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-slate-100 dark:divide-slate-800">
             {members.map((mem) => {
               const userSurveys = families.filter((f) => f.user_id === mem.id);
               const isSelf = mem.id === profile?.id;
@@ -212,26 +212,26 @@ export const AdminTeamView: React.FC<AdminTeamViewProps> = ({
               return (
                 <div key={mem.id} className="py-3.5 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-xs">
+                    <div className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 font-bold text-xs">
                       {mem.full_name?.charAt(0)?.toUpperCase() || 'U'}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900 text-xs">
+                        <span className="font-bold text-slate-900 dark:text-white text-xs">
                           {mem.full_name}
-                          {isSelf && <span className="text-slate-400 font-normal"> ({t.youBadge})</span>}
+                          {isSelf && <span className="text-slate-400 dark:text-slate-500 font-normal"> ({t.youBadge})</span>}
                         </span>
                         {mem.role === 'admin' ? (
-                          <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 rounded">
+                          <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 px-1.5 rounded">
                             {t.roleAdmin}
                           </span>
                         ) : (
-                          <span className="text-[10px] font-medium text-blue-700 bg-blue-50 border border-blue-200 px-1.5 rounded">
+                          <span className="text-[10px] font-medium text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 px-1.5 rounded">
                             {t.roleWorker}
                           </span>
                         )}
                       </div>
-                      <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
+                      <div className="text-[11px] text-slate-400 dark:text-slate-500 flex items-center gap-2 mt-0.5">
                         <span className="flex items-center gap-1">
                           <Mail className="w-3 h-3" /> {mem.email}
                         </span>
@@ -245,7 +245,7 @@ export const AdminTeamView: React.FC<AdminTeamViewProps> = ({
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
                       <FileSpreadsheet className="w-3 h-3" />
                       {userSurveys.length} {t.surveysCount}
                     </span>
@@ -253,7 +253,7 @@ export const AdminTeamView: React.FC<AdminTeamViewProps> = ({
                     {!isSelf && mem.role !== 'admin' && (
                       <button
                         onClick={() => handleRemoveUser(mem.id, mem.full_name)}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                        className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 rounded-lg transition-colors cursor-pointer"
                         title={t.btnRemoveUser}
                       >
                         <UserX className="w-4 h-4" />

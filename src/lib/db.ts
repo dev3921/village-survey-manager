@@ -102,10 +102,29 @@ export const dbService = {
     },
 
     joinByReferralCode: async (code: string): Promise<Team> => {
+      const cleanCode = code.trim().toUpperCase();
+
+      // Use the SECURITY DEFINER RPC function to safely validate and join team
+      const { data, error: rpcErr } = await supabase.rpc('join_team_with_referral_code', {
+        code_input: cleanCode,
+      });
+
+      if (!rpcErr && data) {
+        if (!data.success) {
+          throw new Error(data.message || 'अवैध रेफरल कोड! कृपया तपासा (Invalid referral code)');
+        }
+        return {
+          id: data.team_id,
+          name: data.team_name,
+          referral_code: cleanCode,
+          admin_id: '',
+          created_at: new Date().toISOString(),
+        };
+      }
+
+      // Fallback in case RPC is not yet created
       const user = await dbService.auth.getCurrentUser();
       if (!user) throw new Error('Not authenticated');
-
-      const cleanCode = code.trim().toUpperCase();
 
       const { data: team, error: findErr } = await supabase
         .from('teams')
