@@ -6,7 +6,7 @@ A production-grade, mobile-first web application for conducting, managing, and e
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
 1. **Official Administrative Login Portal**:
    - Clean institutional portal styling with zero marketing fluff.
@@ -31,10 +31,9 @@ A production-grade, mobile-first web application for conducting, managing, and e
    - **Floating Action Button (FAB)**: Floating `+ नवीन नोंदणी` button for fast survey creation while walking through villages.
 
 5. **Field Smart Capabilities**:
-   - 📍 **One-Tap GPS Auto-Location**: Uses device GPS (`navigator.geolocation`) to record precise house coordinates ($\pm 5$m precision).
-   - 🎤 **Marathi & English Voice Dictation**: Speech-to-text button allowing hands-free voice typing for Marathi descriptions.
-   - 💾 **Client-Side Storage Caching**: Caches survey data in local browser storage for instant 0ms loads and offline data access in rural 2G zones.
-   - 🌓 **Dark / Light Mode Toggle**: Seamless theme switching with persistent user preference.
+   - **# Marathi & English Voice Dictation**: Speech-to-text button allowing hands-free voice typing for Marathi descriptions.
+   - **# Client-Side Storage Caching**: Caches survey data in local browser storage for instant 0ms loads and offline data access in rural 2G zones.
+   - **# Dark / Light Mode Toggle**: Seamless theme switching with persistent user preference.
 
 6. **Exact 25-Column Survey Form (Bilingual Marathi + English)**:
    - Primary labels in Marathi with English subtitles.
@@ -48,7 +47,7 @@ A production-grade, mobile-first web application for conducting, managing, and e
 
 ---
 
-## 📋 The 25 Survey Fields
+## The 25 Survey Fields
 
 | # | Marathi Field | English Subtitle |
 |---|---------------|------------------|
@@ -86,45 +85,4 @@ A production-grade, mobile-first web application for conducting, managing, and e
 - **Backend / Database**: Supabase (PostgreSQL, Row-Level Security, RPC Functions)
 - **Authentication**: Google OAuth with PKCE & Cookie Hybrid Storage
 - **Export Engines**: SheetJS (`xlsx`) for exact 25-column template export, `jspdf` & `jspdf-autotable`
-- **Hosting**: Vercel Production Deployment
-
----
-
-## 🗄️ Supabase Database Setup
-
-### Step 1: Run SQL Migration
-Go to your Supabase project -> **SQL Editor** and execute the entire content of:
-`supabase/migrations/001_schema.sql`
-
-### Step 2: Configure Google OAuth
-In Supabase Dashboard:
-1. Go to **Authentication** -> **Providers** -> **Google**.
-2. Toggle Google ON.
-3. Enter your Google Client ID and Client Secret (from Google Cloud Console).
-4. In **Authentication** -> **URL Configuration**:
-   - Set **Site URL** to `https://village-survey-manager.vercel.app`.
-   - Add Redirect URLs: `https://village-survey-manager.vercel.app/**` and `http://localhost:5173/**`.
-
-### Step 3: Promote an Admin
-In Supabase SQL Editor:
-```sql
-UPDATE profiles
-SET role = 'admin'
-WHERE email = 'YOUR_GOOGLE_EMAIL@gmail.com';
-```
-
----
-
-## 🚀 Running Locally
-
-```bash
-# Clone the repository
-git clone <YOUR_REPO_URL>
-cd village-survey-manager
-
-# Install dependencies
-npm install
-
-# Start local dev server
-npm run dev
-```
+- **Hosting**: Vercel Production Deployment 
