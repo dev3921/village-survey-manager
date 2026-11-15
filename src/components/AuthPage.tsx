@@ -63,9 +63,6 @@ export const AuthPage: React.FC<AuthPageProps> = () => {
               <span className="font-extrabold text-base sm:text-lg tracking-tight text-slate-900 block leading-tight">
                 {t.portalTitle}
               </span>
-              <span className="text-[11px] text-slate-500 font-medium hidden sm:block">
-                {t.portalSubtitle}
-              </span>
             </div>
           </div>
 
