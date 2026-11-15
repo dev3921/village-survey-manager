@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 import type { Profile, Team, Family, FamilyFormData } from './types';
 import { generateReferralCode } from './utils';
+import { surveyCache } from './cache';
 
 export const dbService = {
   // ─── AUTH ───────────────────────────────────────────
@@ -178,7 +179,13 @@ export const dbService = {
 
   // ─── FAMILIES (SURVEYS) ─────────────────────────────
   families: {
-    getAll: async (): Promise<Family[]> => {
+    getAll: async (forceRefresh = false): Promise<Family[]> => {
+      // Return local cache immediately if fresh to minimize database reads & bandwidth
+      if (!forceRefresh && !surveyCache.isStale()) {
+        const cached = surveyCache.get();
+        if (cached && cached.length > 0) return cached;
+      }
+
       const profile = await dbService.profile.getProfile();
       if (!profile) return [];
 
@@ -199,7 +206,8 @@ export const dbService = {
       const { data, error } = await query;
       if (error) {
         console.error('Error fetching families:', error);
-        return [];
+        // Fallback to offline cached data if available
+        return surveyCache.get() || [];
       }
 
       const familiesList = (data || []) as Family[];
@@ -223,6 +231,9 @@ export const dbService = {
           console.warn('Could not populate submitters:', e);
         }
       }
+
+      // Store in client-side storage cache
+      surveyCache.set(familiesList);
 
       return familiesList;
     },
@@ -264,9 +275,11 @@ export const dbService = {
           .select();
 
         if (memErr) throw memErr;
+        surveyCache.invalidate();
         return { ...createdFam, members: createdMembers } as Family;
       }
 
+      surveyCache.invalidate();
       return createdFam as Family;
     },
 
@@ -293,16 +306,19 @@ export const dbService = {
             .insert(rows)
             .select();
 
+          surveyCache.invalidate();
           return { ...updatedFam, members: newMembers || [] } as Family;
         }
       }
 
+      surveyCache.invalidate();
       return updatedFam as Family;
     },
 
     delete: async (id: string): Promise<void> => {
       const { error } = await supabase.from('families').delete().eq('id', id);
       if (error) throw error;
+      surveyCache.invalidate();
     },
   },
 };
