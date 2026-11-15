@@ -154,7 +154,7 @@ export function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 md:pb-8">
         {activeTab === 'surveys' && (
           <SurveyList
             families={families}
@@ -188,7 +188,7 @@ export function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200/80 bg-white py-4 text-center text-xs text-slate-400">
+      <footer className="hidden md:block border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-4 text-center text-xs text-slate-400 dark:text-slate-500 transition-colors">
         Village Survey Manager · कुटुंब सर्वेक्षण व संघ व्यवस्थापन प्रणाली · २०२६
       </footer>
     </div>

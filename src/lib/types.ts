@@ -44,6 +44,12 @@ export interface Family {
   created_at: string;
   updated_at: string;
   members?: FamilyMember[];
+  submitter?: {
+    id: string;
+    full_name: string;
+    email: string;
+    role: 'admin' | 'user';
+  } | null;
 }
 
 export interface FamilyMember {

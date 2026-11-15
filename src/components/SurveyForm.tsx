@@ -19,7 +19,10 @@ import {
   ArrowLeft, 
   FileCheck2, 
   Users, 
-  AlertCircle
+  AlertCircle,
+  MapPin,
+  Mic,
+  Loader2
 } from 'lucide-react';
 
 interface SurveyFormProps {
@@ -82,6 +85,60 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
   const [internetAccess, setInternetAccess] = useState<string>(
     initialData?.internet_access || internetOptions[0]
   );
+
+  // Field Smart Features: GPS Location & Voice Dictation
+  const [detectingGps, setDetectingGps] = useState(false);
+  const [listeningField, setListeningField] = useState<string | null>(null);
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) {
+      alert(lang === 'mr' ? 'आपल्या ब्राउझरमध्ये GPS उपलब्ध नाही.' : 'Geolocation is not supported by your browser.');
+      return;
+    }
+    setDetectingGps(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude.toFixed(4);
+        const lng = pos.coords.longitude.toFixed(4);
+        setVillageName((prev) => (prev ? `${prev} (📍 ${lat}, ${lng})` : `📍 ${lat}, ${lng}`));
+        setDetectingGps(false);
+      },
+      (err) => {
+        console.warn('GPS error:', err);
+        alert(lang === 'mr' ? 'लोकेशन मिळवता आले नाही. कृपया GPS चालू करा.' : 'Unable to retrieve location. Please allow GPS.');
+        setDetectingGps(false);
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  };
+
+  const handleStartVoice = (fieldName: string, onResult: (text: string) => void) => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert(lang === 'mr' ? 'आपल्या ब्राउझरमध्ये व्हॉइस टायपिंग उपलब्ध नाही (Google Chrome वापरा).' : 'Speech recognition not supported in this browser (use Google Chrome).');
+      return;
+    }
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = lang === 'mr' ? 'mr-IN' : 'en-IN';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      setListeningField(fieldName);
+      recognition.onstart = () => setListeningField(fieldName);
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        if (transcript) onResult(transcript);
+        setListeningField(null);
+      };
+      recognition.onerror = () => setListeningField(null);
+      recognition.onend = () => setListeningField(null);
+      recognition.start();
+    } catch (e) {
+      console.warn('Voice error:', e);
+      setListeningField(null);
+    }
+  };
 
   // Member sub-rows
   const [members, setMembers] = useState<FamilyFormData['members']>(() => {
@@ -199,36 +256,36 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-5xl mx-auto space-y-8 pb-16">
+    <form onSubmit={handleSubmit} className="max-w-5xl mx-auto space-y-6 sm:space-y-8 pb-24 md:pb-16 px-1 sm:px-0">
       {/* Top Header Card */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors">
         <div>
           <button
             type="button"
             onClick={onCancel}
-            className="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 mb-2 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 mb-1.5 transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>{t.btnBack}</span>
           </button>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-            <FileCheck2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+          <h2 className="text-lg sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+            <FileCheck2 className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 dark:text-emerald-400" />
             <span>{initialData ? t.formEditTitle : t.formNewTitle}</span>
           </h2>
         </div>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="hidden sm:flex items-center gap-3 w-full sm:w-auto">
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 sm:flex-none px-4 py-2 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            className="px-4 py-2 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             {t.btnCancel}
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl shadow-xs transition-all disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl shadow-xs transition-all disabled:opacity-50 cursor-pointer"
           >
             <Save className="w-4 h-4" />
             <span>{loading ? t.btnSaving : t.btnSave}</span>
@@ -244,26 +301,41 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
       )}
 
       {/* SECTION 1: Basic Info */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 transition-colors">
-        <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-5 sm:space-y-6 transition-colors">
+        <div className="pb-3 border-b border-slate-100 dark:border-slate-800">
           <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.sec1Title}</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.sec1Desc}</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fSrNo}</label>
             <input
               type="number"
               value={serialNo}
               onChange={(e) => setSerialNo(Number(e.target.value))}
-              className="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+              className="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-bold"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fVillage}</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">{t.fVillage}</label>
+              <button
+                type="button"
+                onClick={handleDetectLocation}
+                disabled={detectingGps}
+                className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 cursor-pointer disabled:opacity-50"
+              >
+                {detectingGps ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                  <MapPin className="w-3 h-3" />
+                )}
+                <span>{detectingGps ? t.detectingLocation : t.btnDetectLocation}</span>
+              </button>
+            </div>
             <input
               type="text"
               value={villageName}
@@ -274,9 +346,23 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-              {t.fHeadName} <span className="text-emerald-600 dark:text-emerald-400">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                {t.fHeadName} <span className="text-emerald-600 dark:text-emerald-400">*</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => handleStartVoice('headName', (val) => handleHeadNameChange(val))}
+                className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-lg border cursor-pointer transition-all ${
+                  listeningField === 'headName'
+                    ? 'bg-rose-500 text-white border-rose-500 animate-pulse'
+                    : 'text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700'
+                }`}
+              >
+                <Mic className="w-3 h-3" />
+                <span>{listeningField === 'headName' ? t.voiceListening : t.btnVoice}</span>
+              </button>
+            </div>
             <input
               type="text"
               value={headName}
@@ -306,7 +392,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                   type="button"
                   key={opt}
                   onClick={() => setEconomicStatus(opt)}
-                  className={`px-5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                  className={`flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                     economicStatus === opt
                       ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs'
                       : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
@@ -321,8 +407,8 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
       </div>
 
       {/* SECTION 2: Dynamic Family Members */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 transition-colors">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-5 sm:space-y-6 transition-colors">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
           <div>
             <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.sec2Title}</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.sec2Desc}</p>
@@ -338,11 +424,11 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
           </button>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {members.map((member, index) => (
             <div
               key={index}
-              className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800/80 hover:border-blue-200 dark:hover:border-blue-700 transition-all space-y-3"
+              className="p-3.5 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800/80 hover:border-blue-200 dark:hover:border-blue-700 transition-all space-y-3"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
@@ -361,7 +447,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-3">
                 <div className="lg:col-span-2">
                   <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">{t.fMemberName}</label>
                   <input
@@ -369,7 +455,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                     value={member.member_name}
                     onChange={(e) => handleMemberChange(index, 'member_name', e.target.value)}
                     placeholder={t.fMemberPlaceholder}
-                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500 focus:outline-hidden font-semibold"
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500 focus:outline-hidden font-semibold"
                     required
                   />
                 </div>
@@ -380,7 +466,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                     type="number"
                     value={member.age ?? ''}
                     onChange={(e) => handleMemberChange(index, 'age', e.target.value ? Number(e.target.value) : null)}
-                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
                   />
                 </div>
 
@@ -389,7 +475,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                   <select
                     value={member.relationship}
                     onChange={(e) => handleMemberChange(index, 'relationship', e.target.value)}
-                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
                   >
                     {relationshipOptions.map((r) => (
                       <option key={r} value={r}>{r}</option>
@@ -402,7 +488,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                   <select
                     value={member.marital_status}
                     onChange={(e) => handleMemberChange(index, 'marital_status', e.target.value)}
-                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
                   >
                     {maritalOptions.map((m) => (
                       <option key={m} value={m}>{m}</option>
@@ -417,7 +503,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                     value={member.education}
                     onChange={(e) => handleMemberChange(index, 'education', e.target.value)}
                     placeholder={lang === 'mr' ? 'उदा. १० वी / पदवी' : 'e.g. 10th / Graduate'}
-                    className="w-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
                   />
                 </div>
               </div>
@@ -427,13 +513,13 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
       </div>
 
       {/* SECTION 3: Socio-Economic */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 transition-colors">
-        <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-5 sm:space-y-6 transition-colors">
+        <div className="pb-3 border-b border-slate-100 dark:border-slate-800">
           <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.sec3Title}</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.sec3Desc}</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fCaste}</label>
             <select
@@ -472,7 +558,21 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fWomenSkills}</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">{t.fWomenSkills}</label>
+              <button
+                type="button"
+                onClick={() => handleStartVoice('womenSkills', (val) => setWomenSkills(val))}
+                className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-lg border cursor-pointer transition-all ${
+                  listeningField === 'womenSkills'
+                    ? 'bg-rose-500 text-white border-rose-500 animate-pulse'
+                    : 'text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700'
+                }`}
+              >
+                <Mic className="w-3 h-3" />
+                <span>{listeningField === 'womenSkills' ? t.voiceListening : t.btnVoice}</span>
+              </button>
+            </div>
             <input
               type="text"
               value={womenSkills}
@@ -497,13 +597,13 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
       </div>
 
       {/* SECTION 4: Land & Housing */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 transition-colors">
-        <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-5 sm:space-y-6 transition-colors">
+        <div className="pb-3 border-b border-slate-100 dark:border-slate-800">
           <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.sec4Title}</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.sec4Desc}</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fFarmLand}</label>
             <input
@@ -565,7 +665,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                   type="button"
                   key={h}
                   onClick={() => setHouseType(h)}
-                  className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                  className={`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                     houseType === h
                       ? 'bg-teal-600 text-white border-teal-600 shadow-2xs'
                       : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
@@ -580,20 +680,20 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
       </div>
 
       {/* SECTION 5: Utilities & Schemes */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 transition-colors">
-        <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-xs space-y-5 sm:space-y-6 transition-colors">
+        <div className="pb-3 border-b border-slate-100 dark:border-slate-800">
           <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{t.sec5Title}</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.sec5Desc}</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fElectricity}</label>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setElectricity(true)}
-                className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                className={`flex-1 sm:flex-none px-5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                   electricity ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
@@ -602,7 +702,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
               <button
                 type="button"
                 onClick={() => setElectricity(false)}
-                className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                className={`flex-1 sm:flex-none px-5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                   !electricity ? 'bg-rose-600 text-white border-rose-600' : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
@@ -617,7 +717,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
               <button
                 type="button"
                 onClick={() => setToilet(true)}
-                className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                className={`flex-1 sm:flex-none px-5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                   toilet ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
@@ -626,7 +726,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
               <button
                 type="button"
                 onClick={() => setToilet(false)}
-                className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                className={`flex-1 sm:flex-none px-5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                   !toilet ? 'bg-rose-600 text-white border-rose-600' : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
@@ -659,7 +759,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
               <button
                 type="button"
                 onClick={() => setHasDisabled(true)}
-                className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                className={`flex-1 sm:flex-none px-5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                   hasDisabled ? 'bg-amber-600 text-white border-amber-600' : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
@@ -668,7 +768,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
               <button
                 type="button"
                 onClick={() => setHasDisabled(false)}
-                className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                className={`flex-1 sm:flex-none px-5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                   !hasDisabled ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
@@ -678,7 +778,21 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{t.fSchemes}</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">{t.fSchemes}</label>
+              <button
+                type="button"
+                onClick={() => handleStartVoice('schemes', (val) => setSchemeBenefits(val))}
+                className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-lg border cursor-pointer transition-all ${
+                  listeningField === 'schemes'
+                    ? 'bg-rose-500 text-white border-rose-500 animate-pulse'
+                    : 'text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700'
+                }`}
+              >
+                <Mic className="w-3 h-3" />
+                <span>{listeningField === 'schemes' ? t.voiceListening : t.btnVoice}</span>
+              </button>
+            </div>
             <input
               type="text"
               value={schemeBenefits}
@@ -696,7 +810,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                   type="button"
                   key={opt}
                   onClick={() => setInternetAccess(opt)}
-                  className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                  className={`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                     internetAccess === opt
                       ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs'
                       : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
@@ -710,25 +824,25 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
         </div>
       </div>
 
-      {/* Bottom Sticky Action Bar */}
-      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-lg flex items-center justify-between gap-4 sticky bottom-4 z-30 transition-colors">
-        <div className="text-xs text-slate-500 dark:text-slate-400">
-          {t.fHeadName}: <span className="font-bold text-slate-800 dark:text-slate-200">{headName || '-'}</span> ·{' '}
-          {t.fTotalMembers}: <span className="font-bold text-slate-800 dark:text-slate-200">{members.length}</span>
+      {/* Bottom Sticky Action Bar (Optimized for Mobile Thumb Tap) */}
+      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl sm:rounded-3xl p-3 sm:p-4 border border-slate-200 dark:border-slate-800 shadow-xl flex items-center justify-between gap-3 sticky bottom-3 z-30 transition-colors">
+        <div className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 truncate max-w-[150px] sm:max-w-none">
+          <span className="font-bold text-slate-800 dark:text-slate-200">{headName || 'कुटुंब'}</span> ·{' '}
+          <span>{members.length} {lang === 'mr' ? 'सदस्य' : 'members'}</span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            className="px-3.5 py-2 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             {t.btnCancel}
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl shadow-md transition-all disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-1.5 sm:gap-2 px-5 sm:px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md transition-all disabled:opacity-50 cursor-pointer"
           >
             <Save className="w-4 h-4" />
             <span>{loading ? t.btnSaving : t.btnSave}</span>

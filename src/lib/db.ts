@@ -185,7 +185,8 @@ export const dbService = {
       let query = supabase
         .from('families')
         .select('*, members:family_members(*)')
-        .order('serial_no', { ascending: true });
+        .order('serial_no', { ascending: true })
+        .order('created_at', { foreignTable: 'family_members', ascending: true });
 
       if (profile.role === 'admin' && profile.team_id) {
         // Admin sees all surveys from their team
@@ -200,7 +201,30 @@ export const dbService = {
         console.error('Error fetching families:', error);
         return [];
       }
-      return (data || []) as Family[];
+
+      const familiesList = (data || []) as Family[];
+
+      // Populate submitter profiles for all user_ids
+      const userIds = Array.from(new Set(familiesList.map((f) => f.user_id).filter(Boolean)));
+      if (userIds.length > 0) {
+        try {
+          const { data: profiles } = await supabase
+            .from('profiles')
+            .select('id, full_name, email, role')
+            .in('id', userIds);
+
+          if (profiles) {
+            const profileMap = new Map(profiles.map((p) => [p.id, p]));
+            familiesList.forEach((f) => {
+              f.submitter = profileMap.get(f.user_id) || null;
+            });
+          }
+        } catch (e) {
+          console.warn('Could not populate submitters:', e);
+        }
+      }
+
+      return familiesList;
     },
 
     getById: async (id: string): Promise<Family | null> => {
