@@ -184,7 +184,7 @@ export const AuthPage: React.FC<AuthPageProps> = () => {
 
       {/* Clean Institutional Footer */}
       <footer className="border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
-        {t.portalTitle} · {t.appNameShort} · {lang === 'mr' ? 'शासकीय व संस्थात्मक वापरासाठी' : 'Official Survey Portal'}
+        Village Survey Manager · {t.appNameShort}
       </footer>
     </div>
   );

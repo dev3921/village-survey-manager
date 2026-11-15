@@ -52,7 +52,6 @@ export const translations = {
 
     // Auth Page
     portalTitle: 'ग्राम कुटुंब सर्वेक्षण प्रणाली',
-    portalSubtitle: 'अधिकृत प्रशासकीय व क्षेत्रीय लॉगिन पोर्टल',
     officialAccessOnly: 'फक्त अधिकृत क्षेत्रीय प्रतिनिधी व ऍडमिन यांच्या वापरासाठी.',
     loginBadge: 'डिजिटल कुटुंब सर्वेक्षण व्यासपीठ',
     loginHeading: 'ग्राम कुटुंब सर्वेक्षण प्रणाली',
@@ -224,7 +223,6 @@ export const translations = {
 
     // Auth Page
     portalTitle: 'Village Survey Management Portal',
-    portalSubtitle: 'Official Administrative & Field Survey Portal',
     officialAccessOnly: 'Authorized field personnel and administrators only.',
     loginBadge: 'Digital Household Survey Platform',
     loginHeading: 'Village Survey Management Portal',
