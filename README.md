@@ -1,34 +1,50 @@
-# Village Survey Manager (ग्राम सर्वेक्षण व्यवस्थापक)
+# Village Survey Manager (ग्राम कुटुंब सर्वेक्षण व्यवस्थापक)
 
-A production-ready web application for conducting, managing, and exporting village household surveys (कुटुंब सर्वेक्षण) with Google Authentication, admin team hierarchy, and referral codes.
+A production-grade, mobile-first web application for conducting, managing, and exporting village household surveys (कुटुंब सर्वेक्षण) with Google Authentication, admin team hierarchy, referral code onboarding, GPS location capture, Marathi voice dictation, and client-side offline storage.
+
+🔗 **Live Production App:** [village-survey-manager.vercel.app](https://village-survey-manager.vercel.app)
 
 ---
 
 ## 🌟 Key Features
 
-1. **Google OAuth & Referral Code Onboarding**:
-   - Clean login with Google OAuth.
-   - Field workers can enter their Admin's 6-character referral code right on the login screen.
-   - After signing in with Google, they are automatically placed into that admin's team.
+1. **Official Administrative Login Portal**:
+   - Clean institutional portal styling with zero marketing fluff.
+   - 1-year persistent cookie session so field surveyors stay logged in across browser restarts and mobile app switches.
+   - Field workers enter their Admin's 6-character referral code right on the login screen to automatically join that admin's team.
 
 2. **Admin & Field Worker Team Hierarchy**:
-   - **System Owner (You)**: Promotes any user to `admin` directly in the database (`UPDATE profiles SET role = 'admin' WHERE email = '...';`).
-   - **Auto-Team Creation**: When an admin is promoted, a team is automatically created with a unique 6-character referral code (e.g., `AB12CD`).
-   - **Admin Powers**: The admin sees all surveys submitted by every field worker under them, can edit, delete, view member details, and export all team data.
-   - **Field Worker View**: A field worker only sees and manages their own submitted surveys.
+   - **System Owner**: Promotes any user to `admin` directly via SQL (`UPDATE profiles SET role = 'admin' WHERE email = '...';`).
+   - **Auto-Team & Code Generation**: When promoted, PostgreSQL triggers automatically generate a team and unique 6-character referral code.
+   - **Admin Powers**: Full visibility over all team submissions, surveyor metrics, member editing/deletion, and master data exports.
+   - **Field Worker View**: Isolated view restricted to their own submissions.
 
-3. **Exact 25-Column Survey Form (Bilingual Marathi + English)**:
+3. **Multi-Tab Survey Hub**:
+   - **All Surveys (सर्व नोंदी)**: Consolidated team view.
+   - **My Surveys (माझ्या नोंदी)**: Quick view of surveys submitted by the logged-in user.
+   - **Workers' Surveys (कार्यकर्त्यांच्या नोंदी)**: Dedicated supervisor view of field team output.
+   - Individual surveyor filter dropdown and surveyor badges on every survey card and row.
+
+4. **Mobile-First Phone Experience**:
+   - **Mobile Cards Layout**: Touch-optimized family cards on smartphones instead of wide overflowing tables.
+   - **Fixed Bottom Navigation Bar**: 1-thumb switching between Surveys, New Entry, and Team Management.
+   - **Floating Action Button (FAB)**: Floating `+ नवीन नोंदणी` button for fast survey creation while walking through villages.
+
+5. **Field Smart Capabilities**:
+   - 📍 **One-Tap GPS Auto-Location**: Uses device GPS (`navigator.geolocation`) to record precise house coordinates ($\pm 5$m precision).
+   - 🎤 **Marathi & English Voice Dictation**: Speech-to-text button allowing hands-free voice typing for Marathi descriptions.
+   - 💾 **Client-Side Storage Caching**: Caches survey data in local browser storage for instant 0ms loads and offline data access in rural 2G zones.
+   - 🌓 **Dark / Light Mode Toggle**: Seamless theme switching with persistent user preference.
+
+6. **Exact 25-Column Survey Form (Bilingual Marathi + English)**:
    - Primary labels in Marathi with English subtitles.
    - Quick-select pill buttons for common choices (`APL/BPL`, `होय/नाही`, `कच्चा/पक्का`, `विहीर/बोर/तळे`, `गॅस/लाकूड`, etc.).
    - Dynamic Family Members table (Add/remove members: Name, Age, Relationship, Marital Status, Education).
 
-4. **100% Template-Matching Excel & PDF Export**:
-   - Directly mirrors the 25 columns and numbered headers from your survey template file (`.xlsx`).
-   - Relational multi-row family-to-member layout.
+7. **100% Template-Matching Excel & PDF Export**:
+   - Directly mirrors the 25 columns and numbered headers (`1..25`) from official government survey templates (`.xlsx`).
+   - Relational multi-row family-to-member layout with numeric currency cells for Excel formulas.
    - Professional PDF summary reports ready for printing.
-
-5. **Row-Level Security (RLS)**:
-   - Secure PostgreSQL policies ensuring field workers access only their own surveys, while admins access all surveys belonging to their team.
 
 ---
 
@@ -64,7 +80,17 @@ A production-ready web application for conducting, managing, and exporting villa
 
 ---
 
-## 🗄️ Setting Up Supabase Production
+## 🛠️ Tech Stack
+
+- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4
+- **Backend / Database**: Supabase (PostgreSQL, Row-Level Security, RPC Functions)
+- **Authentication**: Google OAuth with PKCE & Cookie Hybrid Storage
+- **Export Engines**: SheetJS (`xlsx`) for exact 25-column template export, `jspdf` & `jspdf-autotable`
+- **Hosting**: Vercel Production Deployment
+
+---
+
+## 🗄️ Supabase Database Setup
 
 ### Step 1: Run SQL Migration
 Go to your Supabase project -> **SQL Editor** and execute the entire content of:
@@ -76,40 +102,29 @@ In Supabase Dashboard:
 2. Toggle Google ON.
 3. Enter your Google Client ID and Client Secret (from Google Cloud Console).
 4. In **Authentication** -> **URL Configuration**:
-   - Set **Site URL** to your app domain (e.g. `http://localhost:5173` or `https://your-app.vercel.app`).
-   - Add Redirect URL to Google Cloud Console: `https://<YOUR-PROJECT-ID>.supabase.co/auth/v1/callback`.
+   - Set **Site URL** to `https://village-survey-manager.vercel.app`.
+   - Add Redirect URLs: `https://village-survey-manager.vercel.app/**` and `http://localhost:5173/**`.
 
-### Step 3: Configure `.env`
-In `village-survey-manager`, create a file named `.env`:
-```env
-VITE_SUPABASE_URL=https://your-project-id.supabase.co
-VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
-```
-
-### Step 4: Promote an Admin
-In Supabase SQL Editor, promote yourself or another user to admin:
+### Step 3: Promote an Admin
+In Supabase SQL Editor:
 ```sql
 UPDATE profiles
 SET role = 'admin'
-WHERE email = 'admin@example.com';
+WHERE email = 'YOUR_GOOGLE_EMAIL@gmail.com';
 ```
-*(The database trigger will automatically generate a team and unique 6-character referral code for this admin!)*
 
 ---
 
 ## 🚀 Running Locally
 
 ```bash
-cd "C:\Users\DEVANAND\OneDrive\Desktop\village-survey-manager"
+# Clone the repository
+git clone <YOUR_REPO_URL>
+cd village-survey-manager
+
+# Install dependencies
+npm install
+
+# Start local dev server
 npm run dev
 ```
-
----
-
-## ☁️ Deploying to Vercel
-
-```bash
-cd "C:\Users\DEVANAND\OneDrive\Desktop\village-survey-manager"
-npx vercel --prod
-```
-Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to your Vercel Environment Variables.
